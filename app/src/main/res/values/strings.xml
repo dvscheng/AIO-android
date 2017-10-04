@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Swugger</string>
+    <string name="email_hint">Type your email here</string>
+    <string name="password_hint">Type your password here</string>
+    <string name="name_button">Start</string>
+    <string name="return_to_main_button">swag out</string>
+    <string name="accounts_toolbar">Accounts</string>
+
+    <string name="dialog_title">Swagaroo</string>
+    <string name="dialog_create_task_msg">New Swask</string>
+    <string name="dialog_accept_task">Swag-task-tic</string>
+    <string name="dialog_cancel_task">Cancel</string>
+    <string name="dialog_new_task_name">Name</string>
+    <string name="dialog_new_task_notes">Notes</string>
+
+    <string name="email_tab_name">Email</string>
+    <string name="calendar_tab_name">Calendar</string>
+    <string name="tasks_tab_name">Tasks</string>
+
+</resources>
