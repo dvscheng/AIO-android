@@ -23,6 +23,7 @@
             android:layout_weight="1"
             android:textSize="16sp"
             android:textStyle="bold"/>
+        <!--  VVV shows the 'notes' of the task -->
 
         <TextView
             android:id="@+id/task_notes"
@@ -31,5 +32,16 @@
             android:layout_weight="1"/>
 
     </LinearLayout>
+
+    <!--TODO: fix task delete button centering-->
+    <Button
+        android:id="@+id/delete_task_button"
+        android:drawableLeft="@drawable/ic_done_black_18dp"
+        android:gravity="center"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:onClick="deleteTask" />
 
 </RelativeLayout>

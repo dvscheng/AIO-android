@@ -9,9 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class EmailFragment extends Fragment {
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mRecyclerViewAdapter;
+    private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
+    private EmailFragment mTargetFragment;
 
     public static EmailFragment newInstance() {
         return new EmailFragment();
@@ -19,11 +26,6 @@ public class EmailFragment extends Fragment {
 
     public EmailFragment() {
     }
-
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mRecyclerViewAdapter;
-    private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
-    private EmailFragment mTargetFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,12 +35,13 @@ public class EmailFragment extends Fragment {
                 R.layout.fragment_email, container, false);
 
 
-
-        /* RecyclerView stuff */
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.tasks_recycler_view);
+        /* Get a reference to the RecyclerView view(?). */
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.email_recycler_view);
 
         // Specify and set an adapter
-        // mRecyclerViewAdapter = new RecyclerViewAdapter(getContext(), mTaskList); // was rootView
+        // for now the adapter just takes an empty list (later we want the emails)
+        List<Task> taskList = new ArrayList<>();
+        mRecyclerViewAdapter = new RecyclerViewAdapter(getContext(), taskList); // was rootView
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 

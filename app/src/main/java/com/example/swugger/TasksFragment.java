@@ -39,6 +39,8 @@ public class TasksFragment extends Fragment implements AddTasksDialogFragment.Ad
         // Add the item to the list
         mTaskList.add(task);
 
+        // FIXME
+        // SQL insecure
         // Add the info to the database
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -88,6 +90,7 @@ public class TasksFragment extends Fragment implements AddTasksDialogFragment.Ad
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         String[] projection = {
                 TaskContract.TaskEntry._ID,
+                //TaskContract.TaskEntry.COL_TASK_ID,       // don't need the id because the id will be gen'd depending on name & notes (look at Task.java)
                 TaskContract.TaskEntry.COL_TASK_NAME,
                 TaskContract.TaskEntry.COL_TASK_NOTES
         };
