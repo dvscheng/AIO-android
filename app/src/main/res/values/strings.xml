@@ -6,6 +6,7 @@
     <string name="return_to_main_button">swag out</string>
     <string name="accounts_toolbar">Accounts</string>
 
+    <!-- Dialog for creating new TASKS -->
     <string name="dialog_title">Swagaroo</string>
     <string name="dialog_create_task_msg">New Swask</string>
     <string name="dialog_accept_task">Swag-task-tic</string>
@@ -13,8 +14,19 @@
     <string name="dialog_new_task_name">Name</string>
     <string name="dialog_new_task_notes">Notes</string>
 
+    <!-- Dialog for creating new EVENTS -->
+    <string name="create_event_dialog_title">Swagaroo</string>
+    <string name="create_event_dialog_msg">New Event</string>
+    <string name="create_event_dialog_accept">Create</string>
+    <string name="create_event_dialog_cancel">Cancel</string>
+    <string name="create_event_dialog_event_name">Name</string>
+    <string name="create_event_dialog_event_notes">Notes</string>
+
     <string name="email_tab_name">Email</string>
     <string name="calendar_tab_name">Calendar</string>
     <string name="tasks_tab_name">Tasks</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

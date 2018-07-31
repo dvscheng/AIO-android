@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.widget.EditText;
 
-public class AddTasksDialogFragment extends DialogFragment {
+public class Tasks_AddDialogFragment extends DialogFragment {
 
     /** Implements the AddTasksDialogListener so that any Activity
      *  that implements it can retrieve information from this Dialog. */

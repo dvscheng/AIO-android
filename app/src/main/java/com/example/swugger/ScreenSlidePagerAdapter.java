@@ -21,7 +21,7 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return new EmailFragment();
         } else if (position == 1) {
-            return new ArticleFragment();
+            return new EventsFragment();
         } else if (position == 2) {
             return new TasksFragment();
         } else {

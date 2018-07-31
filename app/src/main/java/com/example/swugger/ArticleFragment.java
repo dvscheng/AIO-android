@@ -20,7 +20,7 @@ public class ArticleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup) inflater.inflate(
-                R.layout.fragment_calender, container, false);
+                R.layout.fragment_events, container, false);
 
         return rootView;
     }

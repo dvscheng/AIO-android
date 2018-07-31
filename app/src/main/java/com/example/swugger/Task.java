@@ -25,7 +25,7 @@ public class Task {
 
     public String getID() { return mID; }
 
-    public void setCheckBoxView(CheckBox checkBox) { vCheckBox = checkBox; }        // check RecyclerViewAdapter for checkbox ref assignment
+    public void setCheckBoxView(CheckBox checkBox) { vCheckBox = checkBox; }        // check Tasks_RecyclerViewAdapter for checkbox ref assignment
 
     public CheckBox getCheckBoxView() { return vCheckBox; }
 }

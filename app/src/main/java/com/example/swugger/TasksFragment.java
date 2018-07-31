@@ -21,9 +21,10 @@ import com.example.swugger.db.TaskDbHelper;
 import java.util.ArrayList;
 
 
-public class TasksFragment extends Fragment implements AddTasksDialogFragment.AddTasksDialogListener {
+public class TasksFragment extends Fragment implements Tasks_AddDialogFragment.AddTasksDialogListener {
 
     private FloatingActionButton mFab;
+    private ArrayList<Task> mTaskList;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
@@ -70,8 +71,6 @@ public class TasksFragment extends Fragment implements AddTasksDialogFragment.Ad
     public TasksFragment() {
     }
 
-    private ArrayList<Task> mTaskList;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -96,7 +95,7 @@ public class TasksFragment extends Fragment implements AddTasksDialogFragment.Ad
         };
         // Get the information as a Cursor by calling db.query()
         Cursor cursor = db.query(
-                TaskContract.TaskEntry.TABLE_NAME,        // The table to query
+                TaskContract.TaskEntry.TABLE_NAME,                      // The table to query
                 projection,                               // The columns to return
                 null,                                     // The columns for the WHERE clause
                 null,                                     // The values for the WHERE clause
@@ -116,18 +115,17 @@ public class TasksFragment extends Fragment implements AddTasksDialogFragment.Ad
         }
 
         // Specify and set an adapter
-        mRecyclerViewAdapter = new RecyclerViewAdapter(getContext(), mTaskList); // was rootView
+        mRecyclerViewAdapter = new Tasks_RecyclerViewAdapter(getContext(), mTaskList); // was rootView
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
         // Set LayoutManager
         mRecyclerViewLayoutManager = new LinearLayoutManager(rootView.getContext());
         mRecyclerView.setLayoutManager(mRecyclerViewLayoutManager);
 
         mTargetFragment = this;
 
-        //Creates a FAB
-        mFab = (FloatingActionButton) rootView.findViewById(R.id.Fab);
+        // Creates a FAB
+        mFab = (FloatingActionButton) rootView.findViewById(R.id.tasks_fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,7 +133,7 @@ public class TasksFragment extends Fragment implements AddTasksDialogFragment.Ad
                         getActivity().getApplication(), R.anim.fab_rotation);
                 mFab.startAnimation(fabRotate);
 
-                AddTasksDialogFragment tasksDialog = new AddTasksDialogFragment();
+                Tasks_AddDialogFragment tasksDialog = new Tasks_AddDialogFragment();
 
                 tasksDialog.setTargetFragment(mTargetFragment, 0);
                 tasksDialog.show(getActivity().getSupportFragmentManager(), "new task");
