@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.swugger.db.TaskContract;
@@ -52,6 +53,15 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
 
         // Inflate the custom layout
         View eventView = inflater.inflate(R.layout.item_event, parent, false);
+
+        // Make event items clickable
+        eventView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: open new dialogfragment when clicking on event to show the notes etc
+                System.out.println("HI");
+            }
+        });
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(eventView);

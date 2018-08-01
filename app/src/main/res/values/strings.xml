@@ -22,6 +22,10 @@
     <string name="create_event_dialog_event_name">Name</string>
     <string name="create_event_dialog_event_notes">Notes</string>
 
+    <!-- Events Fragment -->
+    <string name="event_calendar_separator_text">Events</string>
+
+
     <string name="email_tab_name">Email</string>
     <string name="calendar_tab_name">Calendar</string>
     <string name="tasks_tab_name">Tasks</string>

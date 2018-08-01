@@ -6,9 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -103,7 +101,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         mRecyclerViewLayoutManager = new LinearLayoutManager(rootView.getContext());
         mRecyclerView.setLayoutManager(mRecyclerViewLayoutManager);
 
-        // re-populate the RecyclerView
+        // Re-populate the RecyclerView
         refreshRecyclerView();
 
         mFab = (FloatingActionButton) rootView.findViewById(R.id.events_fab);
@@ -170,7 +168,6 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
 
         mRecyclerViewAdapter.notifyDataSetChanged();
     }
-
     /* Retrieve Events from the database and then populate the RecyclerView. */
     private void retrieveAndPopulate(String currentMonth, String currentDay, String currentYear) {
         // Read information from SQLDatabase
