@@ -12,7 +12,7 @@
         android:id="@+id/main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorAccent"
+        android:background="@color/colorAccentTeal"
         app:titleTextColor="@android:color/white"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
@@ -25,7 +25,7 @@
 
         <android.support.v4.view.PagerTabStrip
             android:id="@+id/pager_header"
-            android:elevation="6dp"
+            android:elevation="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"

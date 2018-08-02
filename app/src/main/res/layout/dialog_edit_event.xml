@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/toolbar_dialog_edit_event"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/colorAccentTeal"
+        android:elevation="3dp">
+
+        <ImageButton
+            android:id="@+id/back_toolbar_dialog_edit_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="24dp"
+            android:src="@drawable/ic_arrow_back_black_24dp"
+            android:tint="@color/colorWhite"
+            android:background="#00000000"
+            />
+
+        <ImageButton
+            android:id="@+id/save_toolbar_dialog_edit_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="24dp"
+            android:src="@drawable/ic_done_black_24dp"
+            android:tint="@color/colorWhite"
+            android:background="#00000000"
+            />
+
+    </RelativeLayout>
+
+    <DatePicker
+        android:id="@+id/create_event_dialog_datepicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:datePickerMode="calendar">
+    </DatePicker>
+
+</RelativeLayout>

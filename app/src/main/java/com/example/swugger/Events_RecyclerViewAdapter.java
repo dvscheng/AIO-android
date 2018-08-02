@@ -1,20 +1,13 @@
 package com.example.swugger;
 
+import android.support.v4.app.Fragment;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Paint;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.example.swugger.db.TaskContract;
-import com.example.swugger.db.TaskDbHelper;
 
 import java.util.List;
 
@@ -31,13 +24,17 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
     }
 
     private List<Event> mEventList;
-
     private Context mContext;
+    private Fragment mEventsFragment;
+    private FragmentManager mFragMan;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public Events_RecyclerViewAdapter(Context context, List<Event> events) {
+    public Events_RecyclerViewAdapter(Context context, List<Event> events, Fragment eventsFragment,
+                                      FragmentManager fragMan) {
         mContext = context;
         mEventList = events;
+        mEventsFragment = eventsFragment;
+        mFragMan = fragMan;
     }
 
     private Context getContext() {
@@ -51,6 +48,8 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
+
+
         // Inflate the custom layout
         View eventView = inflater.inflate(R.layout.item_event, parent, false);
 
@@ -59,7 +58,12 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
             @Override
             public void onClick(View v) {
                 // TODO: open new dialogfragment when clicking on event to show the notes etc
-                System.out.println("HI");
+
+                Events_EditEventDialogFragment eventDialog = new Events_EditEventDialogFragment();
+
+                eventDialog.setTargetFragment(mEventsFragment, 0);
+                //eventDialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.FullscreenDialogFragmentTheme);       // makes the dialog fullscreen
+                eventDialog.show(mFragMan, "new event");
             }
         });
 

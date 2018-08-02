@@ -94,7 +94,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         mEventList = new ArrayList<>();
 
         // Specify and set an adapter
-        mRecyclerViewAdapter = new Events_RecyclerViewAdapter(getContext(), mEventList); // was rootView
+        mRecyclerViewAdapter = new Events_RecyclerViewAdapter(getContext(), mEventList, this, getFragmentManager()); // was rootView
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         // Set LayoutManager
@@ -108,9 +108,9 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Animation fabRotate = AnimationUtils.loadAnimation(
+                /*Animation fabRotate = AnimationUtils.loadAnimation(
                         getActivity().getApplication(), R.anim.fab_rotation);
-                mFab.startAnimation(fabRotate);
+                mFab.startAnimation(fabRotate);*/
 
                 Events_AddDialogFragment eventDialog = new Events_AddDialogFragment(mCalendarView.getDate());
 
