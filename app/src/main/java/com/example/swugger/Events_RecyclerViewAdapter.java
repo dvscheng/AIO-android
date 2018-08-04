@@ -1,5 +1,6 @@
 package com.example.swugger;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
@@ -48,24 +49,8 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-
-
         // Inflate the custom layout
         View eventView = inflater.inflate(R.layout.item_event, parent, false);
-
-        // Make event items clickable
-        eventView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: open new dialogfragment when clicking on event to show the notes etc
-
-                Events_EditEventDialogFragment eventDialog = new Events_EditEventDialogFragment();
-
-                eventDialog.setTargetFragment(mEventsFragment, 0);
-                //eventDialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.FullscreenDialogFragmentTheme);       // makes the dialog fullscreen
-                eventDialog.show(mFragMan, "new event");
-            }
-        });
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(eventView);
@@ -86,44 +71,25 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
         int minute = event.getMinute();
         timeTextView.setText(Event.convertHourAndMinuteToTimeStamp(hour, minute));
 
-
-        final Events_RecyclerViewAdapter thisAdapter = this;
-
-        /*viewHolder.mThisCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked) {
-                    // strike-through the text doesn't work with app-widgets, check remoteview for that
-                    viewHolder.mNameTextView.setPaintFlags(viewHolder.mNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    viewHolder.mNotesTextView.setPaintFlags(viewHolder.mNotesTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                } else {
-                    viewHolder.mNameTextView.setPaintFlags(viewHolder.mNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                    viewHolder.mNotesTextView.setPaintFlags(viewHolder.mNotesTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                }
-            }
-        });*/
-
-        /*viewHolder.mDeleteButton.setOnClickListener(new View.OnClickListener(){
+        // Make item views clickable
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                task.getCheckBoxView().setChecked(false);
+                Events_EditEventDialogFragment eventDialog = new Events_EditEventDialogFragment();
 
-                // TODO: create the task by task id
-                // remove the task from the db
-                TaskDbHelper dbHelper = new TaskDbHelper(mContext);
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                db.delete(TaskContract.TaskEntry.TABLE_NAME,
-                        TaskContract.TaskEntry.COL_TASK_NAME + "= '" + task.getName()
-                                + "' and "
-                                + TaskContract.TaskEntry.COL_TASK_NOTES + "= '" + task.getNotes() + "'",
-                        null);
+                // pass in the event object into the edit dialog
+                Bundle args = new Bundle();
+                args.putSerializable(Event.SERIALIZE_KEY, event);
+                eventDialog.setArguments(args);
 
-                // remove task from recyclerview list and notify adapter
-                mTaskList.remove(task);
-                thisAdapter.notifyDataSetChanged();
+                eventDialog.setTargetFragment(mEventsFragment, 0);
+                //eventDialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.FullscreenDialogFragmentTheme);       // makes the dialog fullscreen
+                eventDialog.show(mFragMan, "new event");
             }
-        });*/
+        });
+
+
+        final Events_RecyclerViewAdapter thisAdapter = this;
     }
 
     // Return the size of your dataset (invoked by the layout manager)

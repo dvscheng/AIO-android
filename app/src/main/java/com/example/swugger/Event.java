@@ -1,6 +1,9 @@
 package com.example.swugger;
 
-public class Event {
+import java.io.Serializable;
+
+public class Event implements Serializable {
+    public static final String SERIALIZE_KEY = "event";
     private String mName;
     private String mNotes;
     private String mID;

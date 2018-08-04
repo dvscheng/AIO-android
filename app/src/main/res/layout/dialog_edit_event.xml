@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -38,12 +41,56 @@
 
     </RelativeLayout>
 
-    <DatePicker
-        android:id="@+id/create_event_dialog_datepicker"
+    <RelativeLayout
+        android:id="@+id/layout_date_dialog_edit_event"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_below="@+id/toolbar_dialog_edit_event"
+        >
+
+        <ImageView
+            android:id="@+id/image_layout_date_dialog_edit_event"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_today_black_24dp"
+            android:layout_centerInParent="true"
+            android:layout_alignParentLeft="true"
+            />
+
+        <TextView
+            android:id="@+id/date_dialog_edit_event"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/image_layout_date_dialog_edit_event"
+            android:textAlignment="center"
+            tools:text="fsadfsdafsa" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/name_note_separator_dialog_edit_event"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/layout_date_dialog_edit_event"
+        android:background="@color/colorAccentLite"
+        android:textAlignment="center"
+        android:text="@string/event_calendar_separator_text"
+        />
+
+    <EditText
+        android:id="@+id/name_dialog_edit_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:datePickerMode="calendar">
-    </DatePicker>
+        android:layout_below="@+id/name_note_separator_dialog_edit_event"
+        >
+    </EditText>
+
+    <EditText
+        android:id="@+id/notes_dialog_edit_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name_dialog_edit_event"
+        >
+    </EditText>
 
 </RelativeLayout>

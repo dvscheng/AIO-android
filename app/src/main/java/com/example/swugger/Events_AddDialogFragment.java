@@ -24,6 +24,7 @@ public class Events_AddDialogFragment extends DialogFragment {
     public Events_AddDialogFragment() {
 
     }
+    // TODO: do bundle with args instead of a diff constructor
     public Events_AddDialogFragment(long date) {
         this.date = date;
     }
@@ -32,8 +33,8 @@ public class Events_AddDialogFragment extends DialogFragment {
      *  that implements it can retrieve information from this Dialog. */
     public interface AddEventsDialogListener {
         /** Send data to the Activity in the form of strings STR. */
-        void onPositiveClick(Event event);
-        void onNegativeClick();
+        void onPositiveClickAdd(Event event);
+        void onNegativeClickAdd();
     }
 
     @Override
@@ -67,14 +68,14 @@ public class Events_AddDialogFragment extends DialogFragment {
 
                         // Send to Activity the info.
                         if (!eventName.equals("")) {
-                            mCallback.onPositiveClick(event);
+                            mCallback.onPositiveClickAdd(event);
                         }
                     }
                 })
                 .setNegativeButton(R.string.create_event_dialog_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
-                        mCallback.onNegativeClick();
+                        mCallback.onNegativeClickAdd();
                     }
                 });
 

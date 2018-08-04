@@ -13,8 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.CalendarView;
 
 import com.example.swugger.db.EventContract;
@@ -22,7 +20,7 @@ import com.example.swugger.db.EventDbHelper;
 
 import java.util.ArrayList;
 
-public class EventsFragment extends Fragment implements Events_AddDialogFragment.AddEventsDialogListener {
+public class EventsFragment extends Fragment implements Events_AddDialogFragment.AddEventsDialogListener, Events_EditEventDialogFragment.EditEventsDialogListener {
 
     private CalendarView mCalendarView;
     private FloatingActionButton mFab;
@@ -40,9 +38,9 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
     public EventsFragment() {
     }
 
-    // For dialog communication
+    /* Positive click for the fab. */
     @Override
-    public void onPositiveClick(Event event) {
+    public void onPositiveClickAdd(Event event) {
         // FIXME
         // SQL insecure
         // Add the info to the database
@@ -74,11 +72,26 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
             mRecyclerViewAdapter.notifyDataSetChanged();
         }
     }
-
+    /* Negative click for the fab. */
     @Override
-    public void onNegativeClick() {
+    public void onNegativeClickAdd() {
         // Do nothing
     }
+    /* Positive click for edit event dialog. */
+    @Override
+    public void onPositiveClickEdit(Events_EditEventDialogFragment editDialog) {
+        // TODO: get the new event info from the dialog instance and create a new event
+        if (editDialog.hasEdits()) {
+
+        }
+    }
+    /* Negative click for edit event dialog. */
+    @Override
+    public void onNegativeClickEdit() {
+        // Don't do anything
+    }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -218,4 +231,5 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
             cursor.close();
         }
     }
+
 }
