@@ -79,10 +79,12 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
     }
     /* Positive click for edit event dialog. */
     @Override
-    public void onPositiveClickEdit(Events_EditEventDialogFragment editDialog) {
-        // TODO: get the new event info from the dialog instance and create a new event
-        if (editDialog.hasEdits()) {
-
+    public void onPositiveClickEdit(Events_EditEventDialogFragment editDialog, boolean hasEdits) {
+        // TODO: get the new event info from the dialog instance and update the event and refresh recyclerview
+        if (hasEdits) {
+            // TODO: fetch info from db (or not) and update the event entry
+            // TODO: remove the Event object from the recyclerview adapter
+            // TODO: re-sort the recyclerview by date (use refresh?)
         }
     }
     /* Negative click for edit event dialog. */

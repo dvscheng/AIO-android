@@ -79,6 +79,7 @@ public class Event implements Serializable {
         return mID;
     }
 
+    /* NOT zero-indexed. [1-12] */
     public int getMonth() {
         return month;
     }
@@ -96,7 +97,7 @@ public class Event implements Serializable {
     }
 
     public int getMinute() {
-        return minute;
+        return minute+1;
     }
 }
 

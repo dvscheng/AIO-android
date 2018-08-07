@@ -27,7 +27,7 @@
 
         <ImageButton
             android:id="@+id/save_toolbar_dialog_edit_event"
-            android:layout_width="72dp"
+            android:layout_width="78dp"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:layout_alignParentRight="true"
@@ -66,6 +66,7 @@
                 android:layout_height="match_parent"
                 android:layout_toRightOf="@+id/image_layout_date_dialog_edit_event"
                 android:gravity="center"
+                android:textSize="20sp"
                 tools:text="fsadfsdafsa" />
 
         </RelativeLayout>
@@ -91,6 +92,7 @@
                 android:layout_height="match_parent"
                 android:layout_toRightOf="@+id/image_layout_time_dialog_edit_event"
                 android:gravity="center"
+                android:textSize="20sp"
                 tools:text="fsadfsdafsa" />
 
         </RelativeLayout>
