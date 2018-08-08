@@ -62,7 +62,14 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
     /** Implements the EditEventsDialogListener so that any Activity
      *  that implements it can retrieve information from this Dialog. */
     public interface EditEventsDialogListener {
-        void onPositiveClickEdit(Events_EditEventDialogFragment editDialog, boolean hasEdits);
+        /** boolean hasEdits = whether ANY attribute has been edited by user
+         * boolean dateChanged = whether a new date has been chosen by user
+         * boolean timeChanged = whether a new time has been chosen by user
+         * the rest are params for an Event */
+        void onPositiveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged,
+                                 String newName, String newNotes,
+                                 int newMonth, int newDay, int newYear,
+                                 int newHour, int newMinute);
         void onNegativeClickEdit();
     }
 
@@ -100,7 +107,24 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.onPositiveClickEdit(thisDialog, hasBeenEdited());
+                String newName = mNameText.getText().toString();
+                String newNotes = mNotesText.getText().toString();
+                int newMonth = -1;
+                int newDay = -1;
+                int newYear = -1;
+                if (dateChanged()) {
+                    newMonth = mDatePicker.getMonth();
+                    newDay = mDatePicker.getDayOfMonth();
+                    newYear = mDatePicker.getYear();
+                }
+                int newHour = -1;
+                int newMinute = -1;
+                if (timeChanged()) {
+                    newHour = mTimePicker.getCurrentHour();
+                    newMinute = mTimePicker.getCurrentMinute();
+                }
+                mCallback.onPositiveClickEdit(mEvent, hasBeenEdited(), dateChanged(), timeChanged(),
+                                                newName, newNotes, newMonth, newDay, newYear, newHour, newMinute);
                 dialog.dismiss();
             }
         });

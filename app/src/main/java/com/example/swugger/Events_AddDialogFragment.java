@@ -66,6 +66,8 @@ public class Events_AddDialogFragment extends DialogFragment {
 
                         Event event = new Event(eventName, eventNotes, month, day, year, hour, minute);
 
+                        // TODO: do not allow duplicate events to be made
+
                         // Send to Activity the info.
                         if (!eventName.equals("")) {
                             mCallback.onPositiveClickAdd(event);

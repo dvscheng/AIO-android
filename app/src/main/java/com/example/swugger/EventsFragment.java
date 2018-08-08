@@ -79,12 +79,61 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
     }
     /* Positive click for edit event dialog. */
     @Override
-    public void onPositiveClickEdit(Events_EditEventDialogFragment editDialog, boolean hasEdits) {
+    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged,
+                                    String newName, String newNotes,
+                                    int newMonth, int newDay, int newYear, int newHour, int newMinute) {
         // TODO: get the new event info from the dialog instance and update the event and refresh recyclerview
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
         if (hasEdits) {
-            // TODO: fetch info from db (or not) and update the event entry
-            // TODO: remove the Event object from the recyclerview adapter
-            // TODO: re-sort the recyclerview by date (use refresh?)
+            // TODO: query for Event ID, which can the obj put through a hashing function or incrementally during construction
+            String whereClause = EventContract.EventEntry.COL_EVENT_NAME + " =? AND " +
+                    EventContract.EventEntry.COL_EVENT_NOTES + " =? AND " +
+                    EventContract.EventEntry.COL_EVENT_MONTH + " =? AND " +
+                    EventContract.EventEntry.COL_EVENT_DAY + " =? AND " +
+                    EventContract.EventEntry.COL_EVENT_YEAR + " =? AND " +
+                    EventContract.EventEntry.COL_EVENT_HOUR+ " =? AND " +
+                    EventContract.EventEntry.COL_EVENT_MINUTE + " =?";
+            String whereArgs[] = new String[]{origEvent.getName(), origEvent.getNotes(),
+                    Integer.toString(origEvent.getMonth()), Integer.toString(origEvent.getDay()), Integer.toString(origEvent.getYear()),
+                    Integer.toString(origEvent.getHour()), Integer.toString(origEvent.getMinute())};
+
+            // insert the new values, always update name and notes, further checking for date and time
+            ContentValues values = new ContentValues();
+            values.put(EventContract.EventEntry.COL_EVENT_NAME, newName);
+            values.put(EventContract.EventEntry.COL_EVENT_NOTES, newNotes);
+            if (dateChanged) {
+                // if somehow these values are -1, do not update, something is wrong
+                if (newMonth == -1 || newDay == -1 || newYear == -1) {
+                    throw new IllegalArgumentException("attempted to update the date without valid params, check EventsFragment.java");
+                }
+                values.put(EventContract.EventEntry.COL_EVENT_MONTH, Integer.toString(newMonth));
+                values.put(EventContract.EventEntry.COL_EVENT_DAY, Integer.toString(newDay));
+                values.put(EventContract.EventEntry.COL_EVENT_YEAR, Integer.toString(newYear));
+            }
+            if (timeChanged) {
+                // if somehow these values are -1, do not update, something is wrong
+                if (newHour == -1 || newMinute == -1) {
+                    throw new IllegalArgumentException("attempted to update the time without valid params (they're -1), check EventsFragment.java");
+                }
+                values.put(EventContract.EventEntry.COL_EVENT_HOUR, Integer.toString(newHour));
+                values.put(EventContract.EventEntry.COL_EVENT_MINUTE, Integer.toString(newMinute));
+            }
+
+            // update the SINGLE row (should not have multiple events with same params) and check that only 1 row was updated
+            int rowsUpdated = db.update(EventContract.EventEntry.TABLE_NAME, values, whereClause, whereArgs);
+            if (rowsUpdated != 1) {
+                throw new SecurityException("we somehow updated more than one row.. \n"
+                        + "name: " + origEvent.getName() + "\n"
+                        + "notes: " + origEvent.getNotes() + "\n"
+                        + "month: " + Integer.toString(origEvent.getMonth()) + "\n"
+                        + "day: " + Integer.toString(origEvent.getDay()) + "\n"
+                        + "year: " + Integer.toString(origEvent.getYear()) + "\n"
+                        + "hour: " + Integer.toString(origEvent.getHour()) + "\n"
+                        + "minute: " + Integer.toString(origEvent.getMinute()) + "\n");
+            }
+
+            // the old event should disappear (if appropriate) and RecyclerView should be re-sorted and updated
+            refreshRecyclerView();
         }
     }
     /* Negative click for edit event dialog. */
@@ -156,14 +205,16 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
 
     /* When app is first opened, populates the RecyclerView according to what day it is. */
     private void refreshRecyclerView() {
-        // TODO: should remove everything in the list because of reference
+        // should remove everything in the list because of reference
         mEventList.clear();
 
         // convert from epoch to readable time
+        // CalenderView.getDate() should return SELECTED date
         String date = Event.convertEpochToDate(mCalendarView.getDate());
-        String currentMonth = Integer.toString(Integer.parseInt(date.substring(0, 2)) - 1);  // months are between [0-11] so need to decrement the month # by 1
-        String currentDay = date.substring(3, 5);
-        String currentYear = date.substring(6, 10);
+        // we parseInt and then toString to get rid of leading 0's. i.e. "07" -> "7"
+        String currentMonth = Integer.toString(Integer.parseInt(date.substring(0, 2)) - 1);  // months in db are saved as between [0-11] so need to decrement the month # by 1
+        String currentDay =  Integer.toString(Integer.parseInt(date.substring(3, 5)));
+        String currentYear = Integer.toString(Integer.parseInt(date.substring(6, 10)));
 
         retrieveAndPopulate(currentMonth, currentDay, currentYear);
 
@@ -171,7 +222,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
     }
     /* Updates the RecyclerView list (removes all elements and then re-populates) according to the selected date. */
     private void refreshRecyclerView(int month, int day, int year) {
-        // TODO: should remove everything in the list because of reference
+        // should remove everything in the list because of reference
         mEventList.clear();
 
         // convert from epoch to readable time
