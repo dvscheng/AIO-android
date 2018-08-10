@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -26,6 +27,8 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
     private Event mEvent;
     private ImageButton mBackButton;
     private ImageButton mSaveButton;
+    private RelativeLayout mDateLayout;
+    private RelativeLayout mTimeLayout;
     private DatePicker mDatePicker;
     private TimePicker mTimePicker;
     private TextView mDateText;
@@ -134,7 +137,8 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         // get references for and initialize various views in the edit template
         mDateText = (TextView) root.findViewById(R.id.date_dialog_edit_event);
         mDateText.setText(String.format(Locale.US, "%d/%d/%d", mEvent.getMonth()+1, mEvent.getDay(), mEvent.getYear()));            // months+1 because months is zero-indexed
-        mDateText.setOnClickListener(new View.OnClickListener() {
+        mDateLayout = (RelativeLayout) root.findViewById(R.id.layout_date_dialog_edit_event);
+        mDateLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), thisDialog, mEvent.getYear(), mEvent.getMonth(), mEvent.getDay());
@@ -144,7 +148,8 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
 
         mTimeText = (TextView) root.findViewById(R.id.time_dialog_edit_event);
         mTimeText.setText(Event.convertHourAndMinuteToTimeStamp(mEvent.getHour(), mEvent.getMinute()));
-        mTimeText.setOnClickListener(new View.OnClickListener() {
+        mTimeLayout = (RelativeLayout) root.findViewById(R.id.layout_time_dialog_edit_event);
+        mTimeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), thisDialog, mEvent.getHour(), mEvent.getMinute(), false);

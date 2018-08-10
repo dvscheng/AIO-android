@@ -41,16 +41,16 @@
         android:id="@+id/date_time_block_dialog_edit_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_below="@+id/toolbar_dialog_edit_event"
         android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/layout_date_dialog_edit_event"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:layout_marginTop="12dp">
+            android:layout_height="48dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:background="?selectableItemBackground">
 
             <ImageView
                 android:id="@+id/image_layout_date_dialog_edit_event"
@@ -74,9 +74,10 @@
         <RelativeLayout
             android:id="@+id/layout_time_dialog_edit_event"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp">
+            android:layout_height="48dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:background="?selectableItemBackground">
 
             <ImageView
                 android:id="@+id/image_layout_time_dialog_edit_event"
