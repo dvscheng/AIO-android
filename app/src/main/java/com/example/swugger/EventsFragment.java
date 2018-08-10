@@ -30,6 +30,10 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
     private EventDbHelper mDbHelper;
     private ArrayList<Event> mEventList;
+    /** These variables keep track of the selected date. */
+    private int currentMonth;
+    private int currentDay;
+    private int currentYear;
 
     public static EventsFragment newInstance() {
         return new EventsFragment();
@@ -54,9 +58,8 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         contentValues.put(EventContract.EventEntry.COL_EVENT_HOUR, event.getHour());
         contentValues.put(EventContract.EventEntry.COL_EVENT_MINUTE, event.getMinute());
 
-        // FIXME
+        // TODO: this long should be a unique ID for each event, consider updating the same db entry right after this insert
         // Add edgecase for adding the same task name/note
-        // Do something with this long later
         long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
 
         // Add the item to the list and notify of a change iff it matches the currently selected date
@@ -122,7 +125,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
             // update the SINGLE row (should not have multiple events with same params) and check that only 1 row was updated
             int rowsUpdated = db.update(EventContract.EventEntry.TABLE_NAME, values, whereClause, whereArgs);
             if (rowsUpdated != 1) {
-                throw new SecurityException("we somehow updated more than one row.. \n"
+                throw new SecurityException("we somehow updated not 1 row, but.. " + rowsUpdated + " to be exact. \n"
                         + "name: " + origEvent.getName() + "\n"
                         + "notes: " + origEvent.getNotes() + "\n"
                         + "month: " + Integer.toString(origEvent.getMonth()) + "\n"
@@ -133,7 +136,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
             }
 
             // the old event should disappear (if appropriate) and RecyclerView should be re-sorted and updated
-            refreshRecyclerView();
+            refreshRecyclerView(currentMonth, currentDay, currentYear);
         }
     }
     /* Negative click for edit event dialog. */
@@ -157,6 +160,14 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         mDbHelper = new EventDbHelper(getContext());
         mEventList = new ArrayList<>();
 
+        // convert from epoch to readable time
+        // CalenderView.getDate() should returns real life current date NOT selected date
+        String date = Event.convertEpochToDate(mCalendarView.getDate());
+        // we parseInt and then toString to get rid of leading 0's. i.e. "07" -> "7"
+        currentMonth = Integer.parseInt(date.substring(0, 2)) - 1;  // months in db are saved as between [0-11] so need to decrement the month # by 1
+        currentDay =  Integer.parseInt(date.substring(3, 5));
+        currentYear = Integer.parseInt(date.substring(6, 10));
+
         // Specify and set an adapter
         mRecyclerViewAdapter = new Events_RecyclerViewAdapter(getContext(), mEventList, this, getFragmentManager()); // was rootView
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
@@ -166,7 +177,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         mRecyclerView.setLayoutManager(mRecyclerViewLayoutManager);
 
         // Re-populate the RecyclerView
-        refreshRecyclerView();
+        refreshRecyclerView(currentMonth, currentDay, currentYear);
 
         mFab = (FloatingActionButton) rootView.findViewById(R.id.events_fab);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -196,6 +207,10 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         mCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                // when user selects new date, save the newly selected date as current date
+                currentMonth = month;
+                currentDay = dayOfMonth;
+                currentYear = year;
                 refreshRecyclerView(month, dayOfMonth, year);   // months from [0-11] already
             }
         });
@@ -203,23 +218,6 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         return rootView;
     }
 
-    /* When app is first opened, populates the RecyclerView according to what day it is. */
-    private void refreshRecyclerView() {
-        // should remove everything in the list because of reference
-        mEventList.clear();
-
-        // convert from epoch to readable time
-        // CalenderView.getDate() should return SELECTED date
-        String date = Event.convertEpochToDate(mCalendarView.getDate());
-        // we parseInt and then toString to get rid of leading 0's. i.e. "07" -> "7"
-        String currentMonth = Integer.toString(Integer.parseInt(date.substring(0, 2)) - 1);  // months in db are saved as between [0-11] so need to decrement the month # by 1
-        String currentDay =  Integer.toString(Integer.parseInt(date.substring(3, 5)));
-        String currentYear = Integer.toString(Integer.parseInt(date.substring(6, 10)));
-
-        retrieveAndPopulate(currentMonth, currentDay, currentYear);
-
-        mRecyclerViewAdapter.notifyDataSetChanged();
-    }
     /* Updates the RecyclerView list (removes all elements and then re-populates) according to the selected date. */
     private void refreshRecyclerView(int month, int day, int year) {
         // should remove everything in the list because of reference
@@ -284,5 +282,24 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
             cursor.close();
         }
     }
+    /** Used for Debugging, print all rows of the given database. */
+    // TODO: make it a static method of an appropriate class
+    public void printDatabase() {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        String tableString = String.format("Table %s:\n", EventContract.EventEntry.TABLE_NAME);
+        Cursor allRows  = db.rawQuery("SELECT * FROM " + EventContract.EventEntry.TABLE_NAME, null);
+        if (allRows.moveToFirst() ){
+            String[] columnNames = allRows.getColumnNames();
+            do {
+                for (String name: columnNames) {
+                    tableString += String.format("%s: %s ", name,
+                            allRows.getString(allRows.getColumnIndex(name)));
+                }
+                tableString += "\n";
 
+            } while (allRows.moveToNext());
+        }
+        allRows.close();
+        System.out.println(tableString);
+    }
 }

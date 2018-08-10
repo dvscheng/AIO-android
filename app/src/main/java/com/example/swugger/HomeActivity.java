@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.swugger.db.EventDbHelper;
+
 import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
@@ -31,7 +33,7 @@ public class HomeActivity extends AppCompatActivity {
     private ViewPager mPager;
 
     /** The pager adapter, which provides the pages to the view pager widget. */
-    private PagerAdapter mPagerAdapter;
+    private ScreenSlidePagerAdapter mPagerAdapter;      // was PagerAdapter
 
     /** 1. Set the toolbar.
      *  2. Create the fragment manager, which will be used for the ViewPager's PagerAdapter.
@@ -88,15 +90,18 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case  R.id.toolbar_accounts:
+            case  R.id.toolbar_task_list:
                 // User chose the "Accounts" action.
+                // TODO: list out the tasks and events in a dialogfragment when pressed
+                mPagerAdapter.getEventFrag().printDatabase();
+                return true;
+            case R.id.toolbar_event_list:
 
                 return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 

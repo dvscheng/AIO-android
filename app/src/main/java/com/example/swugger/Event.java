@@ -97,7 +97,7 @@ public class Event implements Serializable {
     }
 
     public int getMinute() {
-        return minute+1;
+        return minute;
     }
 }
 

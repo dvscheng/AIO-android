@@ -4,8 +4,13 @@
 
     <!-- Settings, should always be in the overflow -->
     <item
-        android:id="@+id/toolbar_accounts"
-        android:title="@string/accounts_toolbar"
+        android:id="@+id/toolbar_task_list"
+        android:title="@string/event_list_toolbar"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/toolbar_event_list"
+        android:title="@string/task_list_toolbar"
         app:showAsAction="never"/>
 
 </menu>

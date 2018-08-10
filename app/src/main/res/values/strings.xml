@@ -4,7 +4,8 @@
     <string name="password_hint">Type your password here</string>
     <string name="name_button">Start</string>
     <string name="return_to_main_button">swag out</string>
-    <string name="accounts_toolbar">Accounts</string>
+    <string name="event_list_toolbar">Debug: Events</string>
+    <string name="task_list_toolbar">Debug: Tasks</string>
 
     <!-- Dialog for creating new TASKS -->
     <string name="dialog_title">Swagaroo</string>

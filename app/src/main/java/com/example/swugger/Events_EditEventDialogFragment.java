@@ -37,6 +37,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        mDatePicker = view;
         // regardless of whether or not the user chose a different date, update the text
         mDateText.setText(String.format(Locale.US, "%d/%d/%d", month+1, dayOfMonth, year));     // months+1 because months is zero-indexed
         // change the text color to indicate whether or not there's a change
@@ -49,6 +50,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        mTimePicker = view;
         // regardless of whether or not the user chose a different time, update the text
         mTimeText.setText(Event.convertHourAndMinuteToTimeStamp(hourOfDay, minute));
         // change the text color to indicate whether or not there's a change
