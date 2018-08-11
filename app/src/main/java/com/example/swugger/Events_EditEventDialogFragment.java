@@ -50,8 +50,8 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         // change the text color to indicate whether or not there's a change
         Resources res = getResources();
         if (mEvent.getMonth() != month || mEvent.getDay() != dayOfMonth || mEvent.getYear() != year) {
-            mDateIcon.setColorFilter(res.getColor(R.color.colorAccentTeal));
-            mDateText.setTextColor(res.getColor(R.color.colorAccentTeal));
+            mDateIcon.setColorFilter(res.getColor(R.color.colorPrimary));
+            mDateText.setTextColor(res.getColor(R.color.colorPrimary));
         } else {
             mDateIcon.setColorFilter(res.getColor(R.color.black));
             mDateText.setTextColor(res.getColor(R.color.gray));
@@ -66,8 +66,8 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         // change the text color to indicate whether or not there's a change
         Resources res = getResources();
         if (mEvent.getHour() != hourOfDay|| mEvent.getMinute() != minute) {
-            mTimeIcon.setColorFilter(res.getColor(R.color.colorAccentTeal));
-            mTimeText.setTextColor(res.getColor(R.color.colorAccentTeal));
+            mTimeIcon.setColorFilter(res.getColor(R.color.colorPrimary));
+            mTimeText.setTextColor(res.getColor(R.color.colorPrimary));
         } else {
             mTimeIcon.setColorFilter(getResources().getColor(R.color.black));
             mTimeText.setTextColor(getResources().getColor(R.color.gray));

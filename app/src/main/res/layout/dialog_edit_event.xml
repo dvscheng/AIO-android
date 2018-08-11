@@ -12,7 +12,7 @@
         android:id="@+id/toolbar_dialog_edit_event"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/colorAccentTeal"
+        android:background="@color/colorPrimary"
         android:elevation="3dp">
 
         <ImageButton
@@ -108,7 +108,7 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@id/date_time_block_dialog_edit_event"
-        android:background="@color/colorAccentLite" />
+        android:background="@color/colorAccent" />
 
     <LinearLayout
         android:id="@+id/name_notes_block_dialog_edit_event"
@@ -133,7 +133,7 @@
             android:id="@+id/name_notes_separator_dialog_edit_event"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/colorAccentLite" />
+            android:background="@color/colorAccent" />
 
         <EditText
             android:id="@+id/notes_dialog_edit_event"

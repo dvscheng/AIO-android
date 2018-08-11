@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#009688</color>
-    <color name="colorPrimaryDark">#009688</color>
+    <color name="colorPrimary">#00a08f</color>
+    <color name="colorPrimaryDark">#00a08f</color>
     <color name="colorAccent">#a3e0d6</color>
-    <!-- #82CFC2 -->
+    <!-- colorAccentLite #a3e0d6 -->
     <color name="colorAccentLite">#a3e0d6</color>
-    <!-- #009688 -->
-    <color name="colorAccentTeal">#009688</color>
+    <!-- colorAccentTeal = #009688 -->
 
     <color name="white">#FFFFFF</color>
     <color name="yellow">#FFFF00</color>

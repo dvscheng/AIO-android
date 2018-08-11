@@ -15,7 +15,7 @@
         android:id="@+id/tasks_fab"
         app:elevation="4dp"
         app:borderWidth="0dp"
-        app:backgroundTint="@color/colorAccentTeal"
+        app:backgroundTint="@color/colorPrimary"
         android:src="@drawable/ic_plus_white_18dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

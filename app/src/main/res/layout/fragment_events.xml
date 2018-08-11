@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="24dp"
         android:layout_below="@id/events_view"
-        android:background="@color/colorAccentLite"
+        android:background="@color/colorAccent"
         android:textAlignment="center"
         android:text="@string/event_calendar_separator_text"
         />
@@ -38,7 +38,7 @@
         android:id="@+id/events_fab"
         app:elevation="4dp"
         app:borderWidth="0dp"
-        app:backgroundTint="@color/colorAccentTeal"
+        app:backgroundTint="@color/colorPrimary"
         android:src="@drawable/ic_today_black_24dp"
         android:tint="@color/white"
         android:layout_width="wrap_content"

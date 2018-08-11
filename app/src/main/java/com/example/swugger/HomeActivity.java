@@ -67,7 +67,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // 5.
         PagerTabStrip tabStrip = (PagerTabStrip) findViewById(R.id.pager_header);
-        tabStrip.setBackgroundColor(getResources().getColor(R.color.colorAccentTeal));
+        tabStrip.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         tabStrip.setTextColor(Color.WHITE);
         tabStrip.setTabIndicatorColor(Color.WHITE);
 
