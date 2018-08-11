@@ -3,6 +3,7 @@ package com.example.swugger;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -31,6 +33,8 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
     private RelativeLayout mTimeLayout;
     private DatePicker mDatePicker;
     private TimePicker mTimePicker;
+    private ImageView mDateIcon;
+    private ImageView mTimeIcon;
     private TextView mDateText;
     private TextView mTimeText;
     private EditText mNameText;
@@ -44,10 +48,13 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         // regardless of whether or not the user chose a different date, update the text
         mDateText.setText(String.format(Locale.US, "%d/%d/%d", month+1, dayOfMonth, year));     // months+1 because months is zero-indexed
         // change the text color to indicate whether or not there's a change
+        Resources res = getResources();
         if (mEvent.getMonth() != month || mEvent.getDay() != dayOfMonth || mEvent.getYear() != year) {
-            mDateText.setTextColor(getResources().getColor(R.color.colorAccentTeal));
+            mDateIcon.setColorFilter(res.getColor(R.color.colorAccentTeal));
+            mDateText.setTextColor(res.getColor(R.color.colorAccentTeal));
         } else {
-            mDateText.setTextColor(getResources().getColor(R.color.gray));
+            mDateIcon.setColorFilter(res.getColor(R.color.black));
+            mDateText.setTextColor(res.getColor(R.color.gray));
         }
     }
 
@@ -57,9 +64,12 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         // regardless of whether or not the user chose a different time, update the text
         mTimeText.setText(Event.convertHourAndMinuteToTimeStamp(hourOfDay, minute));
         // change the text color to indicate whether or not there's a change
+        Resources res = getResources();
         if (mEvent.getHour() != hourOfDay|| mEvent.getMinute() != minute) {
-            mTimeText.setTextColor(getResources().getColor(R.color.colorAccentTeal));
+            mTimeIcon.setColorFilter(res.getColor(R.color.colorAccentTeal));
+            mTimeText.setTextColor(res.getColor(R.color.colorAccentTeal));
         } else {
+            mTimeIcon.setColorFilter(getResources().getColor(R.color.black));
             mTimeText.setTextColor(getResources().getColor(R.color.gray));
         }
     }
@@ -137,6 +147,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         });
 
         // get references for and initialize various views in the edit template
+        mDateIcon = (ImageView) root.findViewById(R.id.image_layout_date_dialog_edit_event);
         mDateText = (TextView) root.findViewById(R.id.date_dialog_edit_event);
         mDateText.setText(String.format(Locale.US, "%d/%d/%d", mEvent.getMonth()+1, mEvent.getDay(), mEvent.getYear()));            // months+1 because months is zero-indexed
         mDateLayout = (RelativeLayout) root.findViewById(R.id.layout_date_dialog_edit_event);
@@ -148,6 +159,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
             }
         });
 
+        mTimeIcon = (ImageView) root.findViewById(R.id.image_layout_time_dialog_edit_event);
         mTimeText = (TextView) root.findViewById(R.id.time_dialog_edit_event);
         mTimeText.setText(Event.convertHourAndMinuteToTimeStamp(mEvent.getHour(), mEvent.getMinute()));
         mTimeLayout = (RelativeLayout) root.findViewById(R.id.layout_time_dialog_edit_event);
