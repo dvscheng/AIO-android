@@ -90,11 +90,12 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         // creating the fullscreen dialog
-        final Dialog dialog = new Dialog(getActivity());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        final Dialog dialog = new Dialog(getActivity(), R.style.FullscreenDialogFragmentTheme);
+        // dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(root);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));       // mandatory for fullscreen... why?
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        // dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));       // mandatory for fullscreen... why?
+        // dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.FullscreenDialogFragmentAnimation;
 
         // grabs the Event object corresponding to the event ItemView
         mEvent = (Event) getArguments().getSerializable(Event.SERIALIZE_KEY);
@@ -104,6 +105,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         mBackButton.setOnClickListener(new View.OnClickListener() { // can it be ImageButton.OnClickListener()?
             @Override
             public void onClick(View v) {
+                // TODO: show confirmation dialog if changes have been made
                 mCallback.onNegativeClickEdit();
                 dialog.dismiss();
             }
