@@ -20,6 +20,7 @@
         <item name="android:paddingLeft">0dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowElevation">16dp</item>
     </style>
 
     <style name="FullscreenDialogFragmentAnimation">
