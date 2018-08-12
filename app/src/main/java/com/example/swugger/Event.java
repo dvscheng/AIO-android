@@ -1,9 +1,12 @@
 package com.example.swugger;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class Event implements Serializable {
     public static final String SERIALIZE_KEY = "event";
+    private String uuid;
     private String mName;
     private String mNotes;
     private String mID;
@@ -12,6 +15,8 @@ public class Event implements Serializable {
     private int year;
     private int hour;       // [0-23]
     private int minute;     // [0-59]
+    private ArrayList<Reminder> remindersList;
+
 
     /* Used when the USER creates a new event. */
     public Event(String name, String notes, int month, int day, int year, int hour, int minute) {
@@ -23,6 +28,8 @@ public class Event implements Serializable {
         this.hour = hour;
         this.minute = minute;
         mID = this.toString();    // assumingg Task.toString() returns a hash.
+        // creates a universally unique id
+        uuid = UUID.randomUUID().toString();
     }
 
     /*  Converts epoch (long) to a date in readable format. */

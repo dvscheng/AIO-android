@@ -135,6 +135,9 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
                         + "minute: " + Integer.toString(origEvent.getMinute()) + "\n");
             }
 
+            // TODO: if time and/or date has changed and updating is successful AND there are existing reminders,
+            // TODO: grab the PendingIntents from SharedPrefs using gson and edit them
+
             // the old event should disappear (if appropriate) and RecyclerView should be re-sorted and updated
             refreshRecyclerView(currentMonth, currentDay, currentYear);
         }

@@ -2,16 +2,15 @@ package com.example.swugger;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,12 +19,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
-public class Events_EditEventDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class Events_EditEventDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, Events_AddReminderDialogFragment.AddReminderDialogListener {
 
+    public static final long millisecondsPerDay = 86400000;
+    public static final long millisecondsPerHour = 3600000;
+    public static final long millisecondsPerMinute = 60000;
     private Events_EditEventDialogFragment thisDialog;
-    private EditEventsDialogListener mCallback;     // the callback fragment
+    private EditEventsDialogListener mCallback;     // the callback fragment for THIS DoalogFragment
     private Event mEvent;
     private ImageButton mBackButton;
     private ImageButton mSaveButton;
@@ -35,6 +39,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
     private TimePicker mTimePicker;
     private ImageView mDateIcon;
     private ImageView mTimeIcon;
+    private ImageButton mAddRemindersButton;
     private TextView mDateText;
     private TextView mTimeText;
     private EditText mNameText;
@@ -72,6 +77,34 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
             mTimeIcon.setColorFilter(getResources().getColor(R.color.black));
             mTimeText.setTextColor(getResources().getColor(R.color.gray));
         }
+    }
+
+    @Override
+    public void onPositiveClickAddReminder(Integer days, Integer hours, Integer minutes) {
+        long daysMilliseconds = 0;
+        long hoursMilliseconds = 0;
+        long minutesMilliseconds = 0;
+        if (days != null) { daysMilliseconds = days.longValue() * millisecondsPerDay; }       // if days is super huge (not likely), watch for overflows
+        if (hours != null) { hoursMilliseconds = hours.longValue() * millisecondsPerHour; }
+        if (minutes != null) { minutesMilliseconds = minutes.longValue() * millisecondsPerMinute; }
+        long totalMilliseconds = daysMilliseconds + hoursMilliseconds + minutesMilliseconds;
+
+        // Get a Calendar representation of the date given by the original event
+        Calendar eventDate = Calendar.getInstance();
+        eventDate.set(mEvent.getYear(), mEvent.getMonth(), mEvent.getDay(), mEvent.getHour(), mEvent.getMinute());
+        // Calculate the date of the reminder
+        Calendar reminderDate = Calendar.getInstance();
+        long reminderDateInMilliseconds = eventDate.getTimeInMillis() - totalMilliseconds;
+        // eventDate should ALWAYS be > reminderDate
+        if (reminderDateInMilliseconds < 0) {
+            throw new ArithmeticException("The reminder date should never be in the future.");
+        }
+        reminderDate.setTimeInMillis(eventDate.getTimeInMillis() - totalMilliseconds);
+    }
+
+    @Override
+    public void onNegativeClickAddReminder() {
+        // Do nothing.
     }
 
     /** Implements the EditEventsDialogListener so that any Activity
@@ -171,6 +204,19 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
             }
         });
 
+        mAddRemindersButton = (ImageButton) root.findViewById(R.id.add_button_layout_reminder_dialog_edit_event);
+        mAddRemindersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Events_AddReminderDialogFragment addReminderDialog = new Events_AddReminderDialogFragment();
+
+                // MUST BE CALLED, saves a reference to this DialogFragment in the new add reminder DialogFragment
+                addReminderDialog.setTargetDialogFragment(thisDialog);
+
+                addReminderDialog.show(getActivity().getFragmentManager(), "new reminder");
+            }
+        });
+
         mNameText = (EditText) root.findViewById(R.id.name_dialog_edit_event);
         mNameText.setText(mEvent.getName());
         mNotesText = (EditText) root.findViewById(R.id.notes_dialog_edit_event);
@@ -214,5 +260,14 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
             return false;
         }
         return true;
+    }
+
+    private void setAlarm(Calendar calendar) {
+    }
+
+    private ArrayList<PendingIntent> createAndStoreAlarmPendingIntents(Event event) {
+        ArrayList<PendingIntent> pendingIntents = new ArrayList<>();
+
+        return pendingIntents;
     }
 }

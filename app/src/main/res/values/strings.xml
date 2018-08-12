@@ -23,6 +23,14 @@
     <string name="create_event_dialog_event_name">Name</string>
     <string name="create_event_dialog_event_notes">Notes</string>
 
+    <!-- Reminders -->
+    <string name="create_reminder_dialog_msg">Add a Reminder</string>
+    <string name="create_reminder_dialog_accept">Add</string>
+    <string name="create_reminder_dialog_cancel">Cancel</string>
+    <string name="reminder_text_days">Days</string>
+    <string name="reminder_text_hours">Hours</string>
+    <string name="reminder_text_minutes">Minutes</string>
+
     <!-- Events Fragment -->
     <string name="event_calendar_separator_text">Events</string>
 

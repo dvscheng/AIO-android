@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:text="@string/create_reminder_dialog_msg"
+        android:textSize="12sp"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="24dp"
+            android:text="@string/reminder_text_days"
+            android:textColor="@color/black"
+            android:gravity="center">
+        </TextView>
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="24dp"
+            android:text="@string/reminder_text_hours"
+            android:textColor="@color/black"
+            android:gravity="center">
+        </TextView>
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="24dp"
+            android:text="@string/reminder_text_minutes"
+            android:textColor="@color/black"
+            android:gravity="center">
+        </TextView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/reminder_spinner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Spinner
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+            android:id="@+id/reminder_days_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:dropDownWidth="64dp"
+            >
+        </Spinner>
+
+        <Spinner
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+            android:id="@+id/reminder_hours_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:dropDownWidth="64dp">
+        </Spinner>
+
+        <Spinner
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+            android:id="@+id/reminder_minutes_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:dropDownWidth="64dp">
+        </Spinner>
+
+    </LinearLayout>
+
+
+</LinearLayout>
