@@ -84,7 +84,8 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
     @Override
     public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged,
                                     String newName, String newNotes,
-                                    int newMonth, int newDay, int newYear, int newHour, int newMinute) {
+                                    int newMonth, int newDay, int newYear, int newHour, int newMinute,
+                                    ArrayList<Reminder> newRemindersList) {
         // TODO: get the new event info from the dialog instance and update the event and refresh recyclerview
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         if (hasEdits) {
@@ -304,5 +305,9 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         }
         allRows.close();
         System.out.println(tableString);
+    }
+
+    private void setAlarm() {
+
     }
 }

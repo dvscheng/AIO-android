@@ -1,25 +1,36 @@
 package com.example.swugger;
 
-import java.util.Calendar;
+import android.app.PendingIntent;
 
 /**
  * Created by David on 8/11/2018.
  */
 
 public class Reminder {
-    private int monthsBefore;
+    private PendingIntent mPendingIntent;
+    private long timeInMilliseconds;
     private int daysBefore;
-    private int yearsBefore;
     private int hoursBefore;
     private int minutesBefore;
 
-    Reminder() {
+    Reminder(long timeInMilliseconds, int days, int hours, int minutes) {
+        this.timeInMilliseconds = timeInMilliseconds;
+        daysBefore = days;
+        hoursBefore = hours;
+        minutesBefore = minutes;
+    }
+
+    public void arm() {
+
+    }
+
+    public void cancel() {
 
     }
 
     @Override
     public String toString() {
-        return Integer.toString(monthsBefore) + Integer.toString(daysBefore) + Integer.toString(yearsBefore)
-                + Integer.toString(hoursBefore) + Integer.toString(minutesBefore);
+        return Long.toString(timeInMilliseconds)
+                + Integer.toString(daysBefore) + Integer.toString(hoursBefore) + Integer.toString(minutesBefore);
     }
 }

@@ -76,7 +76,7 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
                 .setPositiveButton(R.string.create_reminder_dialog_accept, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //TODO: check if there is a valid reminder to create
-                        mCallback.onPositiveClickAddReminder();
+                        mCallback.onPositiveClickAddReminder(days, hours, minutes);
                     }
                 })
                 .setNegativeButton(R.string.create_reminder_dialog_cancel, new DialogInterface.OnClickListener() {
@@ -93,6 +93,7 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
         mDaySpinner.setAdapter(daySpinnerAdapter);
         mDaySpinner.setOnItemSelectedListener(this);
         mDaySpinner.setSelection(DAY_SPINNER_DEFAULT_POS);
+        days = DAY_SPINNER_DEFAULT_POS;
 
         mHourSpinner = (Spinner) root.findViewById(R.id.reminder_hours_spinner);
         hourSpinnerAdapter = ArrayAdapter.createFromResource(mCallback.getContext(), R.array.reminder_numbers, android.R.layout.simple_spinner_item);
@@ -100,6 +101,7 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
         mHourSpinner.setAdapter(hourSpinnerAdapter);
         mHourSpinner.setOnItemSelectedListener(this);
         mHourSpinner.setSelection(HOUR_SPINNER_DEFAULT_POS);
+        hours = HOUR_SPINNER_DEFAULT_POS;
 
         mMinuteSpinner = (Spinner) root.findViewById(R.id.reminder_minutes_spinner);
         minuteSpinnerAdapter = ArrayAdapter.createFromResource(mCallback.getContext(), R.array.reminder_numbers, android.R.layout.simple_spinner_item);
@@ -107,6 +109,7 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
         mMinuteSpinner.setAdapter(minuteSpinnerAdapter);
         mMinuteSpinner.setOnItemSelectedListener(this);
         mMinuteSpinner.setSelection(MINUTE_SPINNER_DEFAULT_POS);
+        minutes = MINUTE_SPINNER_DEFAULT_POS;
 
         return builder.create();
     }

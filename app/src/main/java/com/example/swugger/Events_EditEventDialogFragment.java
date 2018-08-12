@@ -40,6 +40,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
     private ImageView mDateIcon;
     private ImageView mTimeIcon;
     private ImageButton mAddRemindersButton;
+    private ArrayList<Reminder> newRemindersList;
     private TextView mDateText;
     private TextView mTimeText;
     private EditText mNameText;
@@ -81,12 +82,9 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
 
     @Override
     public void onPositiveClickAddReminder(Integer days, Integer hours, Integer minutes) {
-        long daysMilliseconds = 0;
-        long hoursMilliseconds = 0;
-        long minutesMilliseconds = 0;
-        if (days != null) { daysMilliseconds = days.longValue() * millisecondsPerDay; }       // if days is super huge (not likely), watch for overflows
-        if (hours != null) { hoursMilliseconds = hours.longValue() * millisecondsPerHour; }
-        if (minutes != null) { minutesMilliseconds = minutes.longValue() * millisecondsPerMinute; }
+        long daysMilliseconds = days.longValue() * millisecondsPerDay;      // if days is super huge (not likely), watch for overflows
+        long hoursMilliseconds = hours.longValue() * millisecondsPerHour;
+        long minutesMilliseconds = minutes.longValue() * millisecondsPerMinute;
         long totalMilliseconds = daysMilliseconds + hoursMilliseconds + minutesMilliseconds;
 
         // Get a Calendar representation of the date given by the original event
@@ -95,11 +93,14 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         // Calculate the date of the reminder
         Calendar reminderDate = Calendar.getInstance();
         long reminderDateInMilliseconds = eventDate.getTimeInMillis() - totalMilliseconds;
-        // eventDate should ALWAYS be > reminderDate
+        // eventDate should ALWAYS be >= reminderDate
         if (reminderDateInMilliseconds < 0) {
             throw new ArithmeticException("The reminder date should never be in the future.");
+        } else {
+            reminderDate.setTimeInMillis(eventDate.getTimeInMillis() - totalMilliseconds);
         }
-        reminderDate.setTimeInMillis(eventDate.getTimeInMillis() - totalMilliseconds);
+
+        newRemindersList.add(new Reminder(reminderDateInMilliseconds, days, hours, minutes));
     }
 
     @Override
@@ -116,8 +117,8 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
          * the rest are params for an Event */
         void onPositiveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged,
                                  String newName, String newNotes,
-                                 int newMonth, int newDay, int newYear,
-                                 int newHour, int newMinute);
+                                 int newMonth, int newDay, int newYear, int newHour, int newMinute,
+                                 ArrayList<Reminder> newRemindersList);
         void onNegativeClickEdit();
     }
 
@@ -174,7 +175,9 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
                     newMinute = mTimePicker.getCurrentMinute();
                 }
                 mCallback.onPositiveClickEdit(mEvent, hasBeenEdited(), dateChanged(), timeChanged(),
-                                                newName, newNotes, newMonth, newDay, newYear, newHour, newMinute);
+                                                newName, newNotes,
+                                                newMonth, newDay, newYear, newHour, newMinute,
+                                                newRemindersList);
                 dialog.dismiss();
             }
         });
@@ -260,9 +263,6 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
             return false;
         }
         return true;
-    }
-
-    private void setAlarm(Calendar calendar) {
     }
 
     private ArrayList<PendingIntent> createAndStoreAlarmPendingIntents(Event event) {
