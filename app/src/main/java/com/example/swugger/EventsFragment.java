@@ -3,6 +3,7 @@ package com.example.swugger;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,8 @@ import android.widget.CalendarView;
 
 import com.example.swugger.db.EventContract;
 import com.example.swugger.db.EventDbHelper;
+import com.example.swugger.db.ReminderContract;
+import com.example.swugger.db.ReminderDbHelper;
 
 import java.util.ArrayList;
 
@@ -28,7 +31,8 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
-    private EventDbHelper mDbHelper;
+    private EventDbHelper eventDbHelper;
+    private ReminderDbHelper reminderDbHelper;
     private ArrayList<Event> mEventList;
     /** These variables keep track of the selected date. */
     private int currentMonth;
@@ -44,36 +48,32 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
 
     /* Positive click for the fab. */
     @Override
-    public void onPositiveClickAdd(Event event) {
-        // FIXME
-        // SQL insecure
+    public void onPositiveClickAdd(String name, String notes, int month, int day, int year, int hour, int minute) {
         // Add the info to the database
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(EventContract.EventEntry.COL_EVENT_NAME, event.getName());
-        contentValues.put(EventContract.EventEntry.COL_EVENT_NOTES, event.getNotes());
-        contentValues.put(EventContract.EventEntry.COL_EVENT_MONTH, event.getMonth());
-        contentValues.put(EventContract.EventEntry.COL_EVENT_DAY, event.getDay());
-        contentValues.put(EventContract.EventEntry.COL_EVENT_YEAR, event.getYear());
-        contentValues.put(EventContract.EventEntry.COL_EVENT_HOUR, event.getHour());
-        contentValues.put(EventContract.EventEntry.COL_EVENT_MINUTE, event.getMinute());
+        // It's okay to convert int values to String because upon retrieval (through cursor.getInt()) they will be ints again
+        String[] colNames = {
+                EventContract.EventEntry.COL_EVENT_NAME,
+                EventContract.EventEntry.COL_EVENT_NOTES,
+                EventContract.EventEntry.COL_EVENT_MONTH,
+                EventContract.EventEntry.COL_EVENT_DAY,
+                EventContract.EventEntry.COL_EVENT_YEAR,
+                EventContract.EventEntry.COL_EVENT_HOUR,
+                EventContract.EventEntry.COL_EVENT_MINUTE };
+        String[] values = {
+                name,
+                notes,
+                Integer.toString(month),
+                Integer.toString(day),
+                Integer.toString(year),
+                Integer.toString(hour),
+                Integer.toString(minute) };
 
-        // TODO: this long should be a unique ID for each event, consider updating the same db entry right after this insert
-        // Add edgecase for adding the same task name/note
-        long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+        // This newRowId should be BaseColumns._ID, which we use as the unique id for each event
+        // also, using this id makes duplicate events distinguishable
+        long newRowId = addToDatabase(eventDbHelper, EventContract.EventEntry.TABLE_NAME, colNames, values);
 
-        // Add the item to the list and notify of a change iff it matches the currently selected date
-        String date = Event.convertEpochToDate(mCalendarView.getDate());
-        int currentMonth = Integer.parseInt(date.substring(0, 2)) - 1;  // months are between [0-11]
-        int currentDay = Integer.parseInt(date.substring(3, 5));    // could also use delimiter here
-        int currentYear = Integer.parseInt(date.substring(6, 10));
-        // TODO: eventually need to refresh entire RecyclerView because needs to be listed by hour
-        if (event.getMonth() == currentMonth
-                && event.getDay() == currentDay
-                && event.getYear() == currentYear) {
-            mEventList.add(event);
-            mRecyclerViewAdapter.notifyDataSetChanged();
-        }
+        // Refresh the current RecyclerView to reflect possible changes
+        refreshRecyclerView(currentMonth, currentDay, currentYear);
     }
     /* Negative click for the fab. */
     @Override
@@ -82,15 +82,17 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
     /* Positive click for edit event dialog. */
     @Override
-    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged,
+    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean remindersAdded,
                                     String newName, String newNotes,
                                     int newMonth, int newDay, int newYear, int newHour, int newMinute,
                                     ArrayList<Reminder> newRemindersList) {
         // TODO: get the new event info from the dialog instance and update the event and refresh recyclerview
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        SQLiteDatabase db = eventDbHelper.getReadableDatabase();
         if (hasEdits) {
-            // TODO: query for Event ID, which can the obj put through a hashing function or incrementally during construction
-            String whereClause = EventContract.EventEntry.COL_EVENT_NAME + " =? AND " +
+            // find the ONE event with the corresponding id
+            String whereClause = EventContract.EventEntry._ID + " =?";
+            String whereArgs[] = new String[]{ Long.toString(origEvent.getId()) };
+            /*String whereClause = EventContract.EventEntry.COL_EVENT_NAME + " =? AND " +
                     EventContract.EventEntry.COL_EVENT_NOTES + " =? AND " +
                     EventContract.EventEntry.COL_EVENT_MONTH + " =? AND " +
                     EventContract.EventEntry.COL_EVENT_DAY + " =? AND " +
@@ -99,45 +101,61 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                     EventContract.EventEntry.COL_EVENT_MINUTE + " =?";
             String whereArgs[] = new String[]{origEvent.getName(), origEvent.getNotes(),
                     Integer.toString(origEvent.getMonth()), Integer.toString(origEvent.getDay()), Integer.toString(origEvent.getYear()),
-                    Integer.toString(origEvent.getHour()), Integer.toString(origEvent.getMinute())};
+                    Integer.toString(origEvent.getHour()), Integer.toString(origEvent.getMinute())};*/
 
             // insert the new values, always update name and notes, further checking for date and time
-            ContentValues values = new ContentValues();
-            values.put(EventContract.EventEntry.COL_EVENT_NAME, newName);
-            values.put(EventContract.EventEntry.COL_EVENT_NOTES, newNotes);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(EventContract.EventEntry.COL_EVENT_NAME, newName);
+            contentValues.put(EventContract.EventEntry.COL_EVENT_NOTES, newNotes);
             if (dateChanged) {
                 // if somehow these values are -1, do not update, something is wrong
                 if (newMonth == -1 || newDay == -1 || newYear == -1) {
-                    throw new IllegalArgumentException("attempted to update the date without valid params, check EventsFragment.java");
+                    throw new IllegalArgumentException("attempted to update the date without valid params, check EventsFragment.onPositiveClickEdit");
                 }
-                values.put(EventContract.EventEntry.COL_EVENT_MONTH, Integer.toString(newMonth));
-                values.put(EventContract.EventEntry.COL_EVENT_DAY, Integer.toString(newDay));
-                values.put(EventContract.EventEntry.COL_EVENT_YEAR, Integer.toString(newYear));
+                contentValues.put(EventContract.EventEntry.COL_EVENT_MONTH, Integer.toString(newMonth));
+                contentValues.put(EventContract.EventEntry.COL_EVENT_DAY, Integer.toString(newDay));
+                contentValues.put(EventContract.EventEntry.COL_EVENT_YEAR, Integer.toString(newYear));
             }
             if (timeChanged) {
                 // if somehow these values are -1, do not update, something is wrong
                 if (newHour == -1 || newMinute == -1) {
-                    throw new IllegalArgumentException("attempted to update the time without valid params (they're -1), check EventsFragment.java");
+                    throw new IllegalArgumentException("attempted to update the time without valid params (they're -1), check EventsFragment.onPositiveClickEdit");
                 }
-                values.put(EventContract.EventEntry.COL_EVENT_HOUR, Integer.toString(newHour));
-                values.put(EventContract.EventEntry.COL_EVENT_MINUTE, Integer.toString(newMinute));
+                contentValues.put(EventContract.EventEntry.COL_EVENT_HOUR, Integer.toString(newHour));
+                contentValues.put(EventContract.EventEntry.COL_EVENT_MINUTE, Integer.toString(newMinute));
             }
 
-            // update the SINGLE row (should not have multiple events with same params) and check that only 1 row was updated
-            int rowsUpdated = db.update(EventContract.EventEntry.TABLE_NAME, values, whereClause, whereArgs);
+            // update the SINGLE row (should not have multiple or no events with these params) and check that only 1 row was updated
+            int rowsUpdated = db.update(EventContract.EventEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
             if (rowsUpdated != 1) {
-                throw new SecurityException("we somehow updated not 1 row, but.. " + rowsUpdated + " to be exact. \n"
-                        + "name: " + origEvent.getName() + "\n"
-                        + "notes: " + origEvent.getNotes() + "\n"
-                        + "month: " + Integer.toString(origEvent.getMonth()) + "\n"
-                        + "day: " + Integer.toString(origEvent.getDay()) + "\n"
-                        + "year: " + Integer.toString(origEvent.getYear()) + "\n"
-                        + "hour: " + Integer.toString(origEvent.getHour()) + "\n"
-                        + "minute: " + Integer.toString(origEvent.getMinute()) + "\n");
+                throw new SecurityException("we somehow updated not 1 row, but.. " + rowsUpdated + " to be exact. \n" + origEvent.toString());
             }
 
             // TODO: if time and/or date has changed and updating is successful AND there are existing reminders,
             // TODO: grab the PendingIntents from SharedPrefs using gson and edit them
+            if (remindersAdded) {
+                // if somehow newRemindersList is empty, something is wrong
+                if (newRemindersList == null) {
+                    throw new NullPointerException("indicated that new reminders were to be added, but reminders list is empty, check EventsFragment.onPositiveClickEdit");
+                }
+
+                // add the reminders
+                for (Reminder newReminder : newRemindersList) {
+                    String[] colNames = {
+                            ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID,
+                            ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS,
+                            ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE,
+                            ReminderContract.ReminderEntry.COL_REMINDER_HOURS_BEFORE,
+                            ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE };
+                    String[] values = {
+                            Long.toString(newReminder.getEventId()),
+                            Long.toString(newReminder.getTimeInMilliseconds()),
+                            Integer.toString(newReminder.getDaysBefore()),
+                            Integer.toString(newReminder.getHoursBefore()),
+                            Integer.toString(newReminder.getMinutesBefore()) };
+                    long newRowId = addToDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, colNames, values);
+                }
+            }
 
             // the old event should disappear (if appropriate) and RecyclerView should be re-sorted and updated
             refreshRecyclerView(currentMonth, currentDay, currentYear);
@@ -161,12 +179,13 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         mCalendarView = (CalendarView) rootView.findViewById(R.id.calendarView_events_fragment);
         mTargetFragment = this;
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_events_fragment);
-        mDbHelper = new EventDbHelper(getContext());
+        eventDbHelper = new EventDbHelper(getContext());
+        reminderDbHelper = new ReminderDbHelper(getContext());
         mEventList = new ArrayList<>();
 
         // convert from epoch to readable time
         // CalenderView.getDate() should returns real life current date NOT selected date
-        String date = Event.convertEpochToDate(mCalendarView.getDate());
+        String date = Event.convertEpochToReadableDate(mCalendarView.getDate());
         // we parseInt and then toString to get rid of leading 0's. i.e. "07" -> "7"
         currentMonth = Integer.parseInt(date.substring(0, 2)) - 1;  // months in db are saved as between [0-11] so need to decrement the month # by 1
         currentDay =  Integer.parseInt(date.substring(3, 5));
@@ -222,7 +241,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         return rootView;
     }
 
-    /* Updates the RecyclerView list (removes all elements and then re-populates) according to the selected date. */
+    /** Updates the RecyclerView list (removes all elements and then re-populates) according to the selected date. */
     private void refreshRecyclerView(int month, int day, int year) {
         // should remove everything in the list because of reference
         mEventList.clear();
@@ -232,19 +251,18 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         String currentDay = Integer.toString(day);
         String currentYear = Integer.toString(year);
 
-        retrieveAndPopulate(currentMonth, currentDay, currentYear);
+        retrieveAndPopulateEvents(currentMonth, currentDay, currentYear);
 
         mRecyclerViewAdapter.notifyDataSetChanged();
     }
-    /* Retrieve Events from the database and then populate the RecyclerView. */
-    private void retrieveAndPopulate(String currentMonth, String currentDay, String currentYear) {
+    /** Retrieve Events from the database and then populate the ArrayList for the RecyclerView. */
+    private void retrieveAndPopulateEvents(String currentMonth, String currentDay, String currentYear) {
         // Read information from SQLDatabase
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        SQLiteDatabase db = eventDbHelper.getReadableDatabase();
         // db.execSQL("DROP TABLE IF EXISTS events");
-        // mDbHelper.onCreate(db);
+        // eventDbHelper.onCreate(db);
         String[] projection = {
                 EventContract.EventEntry._ID,
-                //TaskContract.TaskEntry.COL_TASK_ID,       // don't need the id because the id will be gen'd depending on name & notes (look at Task.java)
                 EventContract.EventEntry.COL_EVENT_NAME,
                 EventContract.EventEntry.COL_EVENT_NOTES,
                 EventContract.EventEntry.COL_EVENT_MONTH,       // [0-11]
@@ -269,6 +287,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                 orderByClause                                // The sort order
         );
         // Get info from cursor and add it as an event to mTaskList
+        int colId = cursor.getColumnIndex(EventContract.EventEntry._ID);
         int colName = cursor.getColumnIndex(EventContract.EventEntry.COL_EVENT_NAME);
         int colNotes = cursor.getColumnIndex(EventContract.EventEntry.COL_EVENT_NOTES);
         int colMonth = cursor.getColumnIndex(EventContract.EventEntry.COL_EVENT_MONTH);
@@ -278,18 +297,81 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         int colMinute = cursor.getColumnIndex(EventContract.EventEntry.COL_EVENT_MINUTE);
         try {
             while (cursor.moveToNext()) {
-                mEventList.add(new Event(cursor.getString(colName), cursor.getString(colNotes),
+                Event newEvent = new Event(cursor.getLong(colId), cursor.getString(colName), cursor.getString(colNotes),
                         cursor.getInt(colMonth), cursor.getInt(colDay), cursor.getInt(colYear),
-                        cursor.getInt(colHour), cursor.getInt(colMinute)));
+                        cursor.getInt(colHour), cursor.getInt(colMinute));
+
+                // get reminders based on event id and add them to event's arraylist
+                retrieveAndPopulateReminders(newEvent);
+
+                // add the event to the eventlist for adapter use
+                mEventList.add(newEvent);
             }
         } finally {
             cursor.close();
         }
     }
+    /** Retrieve Reminders from the database and then populate the provided event's RemindersList */
+    private void retrieveAndPopulateReminders(Event event) {
+        SQLiteDatabase db = reminderDbHelper.getReadableDatabase();
+
+        String[] projection = {
+                ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID,
+                ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS,
+                ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE,
+                ReminderContract.ReminderEntry.COL_REMINDER_HOURS_BEFORE,
+                ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE
+        };
+        String whereClause = ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID + " =?";
+        String[] whereArgs = new String[] { Long.toString(event.getId()) };
+        String orderByClause = ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS + " ASC";
+        Cursor cursor = db.query(
+                ReminderContract.ReminderEntry.TABLE_NAME,                      // The table to query
+                projection,                               // The columns to return
+                whereClause,                                     // The columns for the WHERE clause
+                whereArgs,                                     // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                orderByClause                                // The sort order
+        );
+        // Get info from cursor and add it as an event to mTaskList
+        int colId = cursor.getColumnIndex(ReminderContract.ReminderEntry._ID);
+        int colEventId = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID);
+        int colMilliseconds = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS);
+        int colDaysBefore = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE);
+        int colHoursBefore = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_HOURS_BEFORE);
+        int colMinutesBefore = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE);
+        try {
+            while (cursor.moveToNext()) {
+                event.addReminder(new Reminder(cursor.getLong(colId), cursor.getLong(colEventId), cursor.getLong(colMilliseconds),
+                                cursor.getInt(colDaysBefore), cursor.getInt(colHoursBefore), cursor.getInt(colMinutesBefore)));
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+    /** Adds to given db. Make sure colNames Strings come from a _Contract class. */
+    private long addToDatabase(SQLiteOpenHelper dbHelper, String tableName, String[] colNames, String[] values) {
+        // TODO: sql insecure
+        // if somehow the number of values are not the same for both arrays, something is wrong
+        if (colNames.length != values.length) {
+            throw new ArrayIndexOutOfBoundsException("provided number of columns vs provided number of values is not equal, check EventsFragment.addToDatabase");
+        }
+
+        // Add info to the database
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        for (int i = 0; i < colNames.length; i++) {
+            contentValues.put(colNames[i], values[i]);
+        }
+
+        long newRowId = db.insert(tableName, null, contentValues);
+        return newRowId;
+    }
     /** Used for Debugging, print all rows of the given database. */
     // TODO: make it a static method of an appropriate class
     public void printDatabase() {
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        SQLiteDatabase db = eventDbHelper.getReadableDatabase();
         String tableString = String.format("Table %s:\n", EventContract.EventEntry.TABLE_NAME);
         Cursor allRows  = db.rawQuery("SELECT * FROM " + EventContract.EventEntry.TABLE_NAME, null);
         if (allRows.moveToFirst() ){

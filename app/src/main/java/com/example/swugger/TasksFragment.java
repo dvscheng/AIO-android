@@ -142,4 +142,25 @@ public class TasksFragment extends Fragment implements AddTaskDialogFragment.Add
 
         return rootView;
     }
+
+    /** Used for Debugging, print all rows of the given database. */
+    // TODO: make it a static method of an appropriate class
+    public void printDatabase() {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        String tableString = String.format("Table %s:\n", TaskContract.TaskEntry.TABLE_NAME);
+        Cursor allRows  = db.rawQuery("SELECT * FROM " + TaskContract.TaskEntry.TABLE_NAME, null);
+        if (allRows.moveToFirst() ){
+            String[] columnNames = allRows.getColumnNames();
+            do {
+                for (String name: columnNames) {
+                    tableString += String.format("%s: %s ", name,
+                            allRows.getString(allRows.getColumnIndex(name)));
+                }
+                tableString += "\n";
+
+            } while (allRows.moveToNext());
+        }
+        allRows.close();
+        System.out.println(tableString);
+    }
 }

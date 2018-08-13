@@ -90,10 +90,10 @@ public class HomeActivity extends AppCompatActivity {
             case  R.id.debug_toolbar_task_list:
                 // User chose the "Accounts" action.
                 // TODO: list out the tasks and events in a dialogfragment when pressed
-                mPagerAdapter.getEventFrag().printDatabase();
+                mPagerAdapter.getTaskFrag().printDatabase();
                 return true;
             case R.id.debug_toolbar_event_list:
-
+                mPagerAdapter.getEventFrag().printDatabase();
                 return true;
             default:
                 // If we got here, the user's action was not recognized.

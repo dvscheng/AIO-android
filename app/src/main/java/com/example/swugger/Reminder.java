@@ -7,17 +7,23 @@ import android.app.PendingIntent;
  */
 
 public class Reminder {
-    private PendingIntent mPendingIntent;
+    private long id;
+    /* The associated event's id. */
+    private long eventId;
+    /* The exact date (MM/DD/YYYY; HH:mm) in milliseconds of the reminder. */
     private long timeInMilliseconds;
+    /* The days, hours, and minutes before the associated event */
     private int daysBefore;
     private int hoursBefore;
     private int minutesBefore;
 
-    Reminder(long timeInMilliseconds, int days, int hours, int minutes) {
+    Reminder(long id, long eventId, long timeInMilliseconds, int daysBefore, int hoursBefore, int minutesBefore) {
+        this.id = id;
+        this.eventId = eventId;
         this.timeInMilliseconds = timeInMilliseconds;
-        daysBefore = days;
-        hoursBefore = hours;
-        minutesBefore = minutes;
+        this.daysBefore = daysBefore;
+        this.hoursBefore = hoursBefore;
+        this.minutesBefore = minutesBefore;
     }
 
     public void arm() {
@@ -26,6 +32,26 @@ public class Reminder {
 
     public void cancel() {
 
+    }
+
+    public long getId() { return id; }
+
+    public long getEventId() {
+        return eventId;
+    }
+
+    public long getTimeInMilliseconds() { return timeInMilliseconds; }
+
+    public int getDaysBefore() {
+        return daysBefore;
+    }
+
+    public int getHoursBefore() {
+        return hoursBefore;
+    }
+
+    public int getMinutesBefore() {
+        return minutesBefore;
     }
 
     @Override

@@ -33,7 +33,7 @@ public class AddEventDialogFragment extends DialogFragment {
      *  that implements it can retrieve information from this Dialog. */
     public interface AddEventDialogListener {
         /** Send data to the Activity in the form of strings STR. */
-        void onPositiveClickAdd(Event event);
+        void onPositiveClickAdd(String name, String notes, int month, int day, int year, int hour, int minute);
         void onNegativeClickAdd();
     }
 
@@ -64,13 +64,9 @@ public class AddEventDialogFragment extends DialogFragment {
                         int hour = mTimePicker.getCurrentHour(); // hours are [0-23] was deprecated in API level 23 to getHour()
                         int minute = mTimePicker.getCurrentMinute(); // minutes are [0-59] was deprecated in API level 23 to getMinute()
 
-                        Event event = new Event(eventName, eventNotes, month, day, year, hour, minute);
-
-                        // TODO: do not allow duplicate events to be made
-
-                        // Send to Activity the info.
+                        // Send to the callback the info.
                         if (!eventName.equals("")) {
-                            mCallback.onPositiveClickAdd(event);
+                            mCallback.onPositiveClickAdd(eventName, eventNotes, month, day, year, hour, minute);
                         }
                     }
                 })

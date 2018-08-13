@@ -2,14 +2,12 @@ package com.example.swugger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class Event implements Serializable {
     public static final String SERIALIZE_KEY = "event";
-    private String uuid;
-    private String mName;
-    private String mNotes;
-    private String mId;
+    private long id;
+    private String name;
+    private String notes;
     private int month;      // [0-11]
     private int day;
     private int year;
@@ -19,21 +17,20 @@ public class Event implements Serializable {
 
 
     /* Used when the USER creates a new event. */
-    public Event(String name, String notes, int month, int day, int year, int hour, int minute) {
-        mName = name;
-        mNotes = notes;
+    public Event(long id, String name, String notes, int month, int day, int year, int hour, int minute) {
+        this.id = id;
+        this.name = name;
+        this.notes = notes;
         this.month = month;
         this.day = day;
         this.year = year;
         this.hour = hour;
         this.minute = minute;
-        mId = this.toString();    // assumingg Task.toString() returns a hash.
         // creates a universally unique id
-        uuid = UUID.randomUUID().toString();
     }
 
     /*  Converts epoch (long) to a date in readable format. */
-    public static String convertEpochToDate(long date) {
+    public static String convertEpochToReadableDate(long date) {
         // from https://www.epochconverter.com/
         return new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date(date));
     }
@@ -74,19 +71,19 @@ public class Event implements Serializable {
         return "" + hour + ":" + strMinute + " " + AmOrPm;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public String getName() {
-        return mName;
+        return name;
     }
 
     public String getNotes() {
-        return mNotes;
+        return notes;
     }
 
-    public String getId() {
-        return mId;
-    }
-
-    /* NOT zero-indexed. [1-12] */
+    /** Zero-indexed. [0-11] */
     public int getMonth() {
         return month;
     }
@@ -99,12 +96,33 @@ public class Event implements Serializable {
         return year;
     }
 
+    /** Zero-indexed. [0-23] */
     public int getHour() {
         return hour;
     }
 
+    /** Zero-indexed. [0-59] */
     public int getMinute() {
         return minute;
+    }
+
+    public void addReminder(Reminder newReminder) {
+        if (newReminder == null) {
+            throw new NullPointerException("attempted to add a null Reminder object, check Event.addReminder()");
+        }
+        remindersList.add(newReminder);
+    }
+
+    @Override
+    public String toString() {
+        return "id: " + id + "\n"
+                + "name: " + name + "\n"
+                + "notes: " + notes + "\n"
+                + "month: " + month + "\n"
+                + "day: " + day + "\n"
+                + "year: " + year + "\n"
+                + "hour: " + hour + "\n"
+                + "minute: " + minute + "\n";
     }
 }
 

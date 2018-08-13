@@ -80,10 +80,10 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
     }
 
     @Override
-    public void onPositiveClickAddReminder(Integer days, Integer hours, Integer minutes) {
-        long daysMilliseconds = days.longValue() * millisecondsPerDay;      // if days is super huge (not likely), watch for overflows
-        long hoursMilliseconds = hours.longValue() * millisecondsPerHour;
-        long minutesMilliseconds = minutes.longValue() * millisecondsPerMinute;
+    public void onPositiveClickAddReminder(Integer daysBefore, Integer hoursBefore, Integer minutesBefore) {
+        long daysMilliseconds = daysBefore.longValue() * millisecondsPerDay;      // if days is super huge (not likely), watch for overflows
+        long hoursMilliseconds = hoursBefore.longValue() * millisecondsPerHour;
+        long minutesMilliseconds = minutesBefore.longValue() * millisecondsPerMinute;
         long totalMilliseconds = daysMilliseconds + hoursMilliseconds + minutesMilliseconds;
 
         // Get a Calendar representation of the date given by the original event
@@ -99,7 +99,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
             reminderDate.setTimeInMillis(eventDate.getTimeInMillis() - totalMilliseconds);
         }
 
-        newRemindersList.add(new Reminder(reminderDateInMilliseconds, days, hours, minutes));
+        newRemindersList.add(new Reminder(reminderDateInMilliseconds, daysBefore, hoursBefore, minutesBefore, mEvent.getId()));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
          * boolean dateChanged = whether a new date has been chosen by user
          * boolean timeChanged = whether a new time has been chosen by user
          * the rest are params for an Event */
-        void onPositiveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged,
+        void onPositiveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean reminderAdded,
                                  String newName, String newNotes,
                                  int newMonth, int newDay, int newYear, int newHour, int newMinute,
                                  ArrayList<Reminder> newRemindersList);
@@ -173,7 +173,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
                     newHour = mTimePicker.getCurrentHour();
                     newMinute = mTimePicker.getCurrentMinute();
                 }
-                mCallback.onPositiveClickEdit(mEvent, hasBeenEdited(), dateChanged(), timeChanged(),
+                mCallback.onPositiveClickEdit(mEvent, hasBeenEdited(), dateChanged(), timeChanged(), reminderAdded(),
                                                 newName, newNotes,
                                                 newMonth, newDay, newYear, newHour, newMinute,
                                                 newRemindersList);
@@ -219,9 +219,9 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
             }
         });
 
-        mNameText = (EditText) root.findViewById(R.id.edittext_name_edit_event_dialog);
+        mNameText = (EditText) root.findViewById(R.id.editText_name_edit_event_dialog);
         mNameText.setText(mEvent.getName());
-        mNotesText = (EditText) root.findViewById(R.id.edittext_notes_edit_event_dialog);
+        mNotesText = (EditText) root.findViewById(R.id.editText_notes_edit_event_dialog);
         mNotesText.setText(mEvent.getNotes());
 
         // TODO: possibly need to reset hasEdits? it is an instance so probably not
@@ -262,6 +262,10 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
             return false;
         }
         return true;
+    }
+    /** Checks whether the user has added reminders. */
+    private boolean reminderAdded() {
+        return !newRemindersList.isEmpty();
     }
 
     private ArrayList<PendingIntent> createAndStoreAlarmPendingIntents(Event event) {
