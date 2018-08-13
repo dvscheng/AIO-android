@@ -10,7 +10,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -23,12 +22,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class Events_EditEventDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, Events_AddReminderDialogFragment.AddReminderDialogListener {
+public class EditEventDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, AddReminderDialogFragment.AddReminderDialogListener {
 
     public static final long millisecondsPerDay = 86400000;
     public static final long millisecondsPerHour = 3600000;
     public static final long millisecondsPerMinute = 60000;
-    private Events_EditEventDialogFragment thisDialog;
+    private EditEventDialogFragment thisDialog;
     private EditEventsDialogListener mCallback;     // the callback fragment for THIS DoalogFragment
     private Event mEvent;
     private ImageButton mBackButton;
@@ -46,7 +45,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
     private EditText mNameText;
     private EditText mNotesText;
 
-    public Events_EditEventDialogFragment() { }
+    public EditEventDialogFragment() { }
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -145,7 +144,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         mEvent = (Event) getArguments().getSerializable(Event.SERIALIZE_KEY);
 
         // add listeners to back and save buttons
-        mBackButton = (ImageButton) root.findViewById(R.id.back_toolbar_dialog_edit_event);
+        mBackButton = (ImageButton) root.findViewById(R.id.button_back_edit_event_dialog);
         mBackButton.setOnClickListener(new View.OnClickListener() { // can it be ImageButton.OnClickListener()?
             @Override
             public void onClick(View v) {
@@ -154,7 +153,7 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
                 dialog.dismiss();
             }
         });
-        mSaveButton = (ImageButton) root.findViewById(R.id.save_toolbar_dialog_edit_event);
+        mSaveButton = (ImageButton) root.findViewById(R.id.button_save_edit_event_dialog);
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,10 +182,10 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
         });
 
         // get references for and initialize various views in the edit template
-        mDateIcon = (ImageView) root.findViewById(R.id.image_layout_date_dialog_edit_event);
-        mDateText = (TextView) root.findViewById(R.id.date_dialog_edit_event);
+        mDateIcon = (ImageView) root.findViewById(R.id.image_date_edit_event_dialog);
+        mDateText = (TextView) root.findViewById(R.id.text_date_edit_event_dialog);
         mDateText.setText(String.format(Locale.US, "%d/%d/%d", mEvent.getMonth()+1, mEvent.getDay(), mEvent.getYear()));            // months+1 because months is zero-indexed
-        mDateLayout = (RelativeLayout) root.findViewById(R.id.layout_date_dialog_edit_event);
+        mDateLayout = (RelativeLayout) root.findViewById(R.id.layout_date_edit_event_dialog);
         mDateLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,10 +194,10 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
             }
         });
 
-        mTimeIcon = (ImageView) root.findViewById(R.id.image_layout_time_dialog_edit_event);
-        mTimeText = (TextView) root.findViewById(R.id.time_dialog_edit_event);
+        mTimeIcon = (ImageView) root.findViewById(R.id.image_time_edit_event_dialog);
+        mTimeText = (TextView) root.findViewById(R.id.text_time_edit_event_dialog);
         mTimeText.setText(Event.convertHourAndMinuteToTimeStamp(mEvent.getHour(), mEvent.getMinute()));
-        mTimeLayout = (RelativeLayout) root.findViewById(R.id.layout_time_dialog_edit_event);
+        mTimeLayout = (RelativeLayout) root.findViewById(R.id.layout_time_edit_event_dialog);
         mTimeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,11 +206,11 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
             }
         });
 
-        mAddRemindersButton = (ImageButton) root.findViewById(R.id.add_button_layout_reminder_dialog_edit_event);
+        mAddRemindersButton = (ImageButton) root.findViewById(R.id.button_add_reminder_edit_event_dialog);
         mAddRemindersButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Events_AddReminderDialogFragment addReminderDialog = new Events_AddReminderDialogFragment();
+                AddReminderDialogFragment addReminderDialog = new AddReminderDialogFragment();
 
                 // MUST BE CALLED, saves a reference to this DialogFragment in the new add reminder DialogFragment
                 addReminderDialog.setTargetDialogFragment(thisDialog);
@@ -220,9 +219,9 @@ public class Events_EditEventDialogFragment extends DialogFragment implements Da
             }
         });
 
-        mNameText = (EditText) root.findViewById(R.id.name_dialog_edit_event);
+        mNameText = (EditText) root.findViewById(R.id.edittext_name_edit_event_dialog);
         mNameText.setText(mEvent.getName());
-        mNotesText = (EditText) root.findViewById(R.id.notes_dialog_edit_event);
+        mNotesText = (EditText) root.findViewById(R.id.edittext_notes_edit_event_dialog);
         mNotesText.setText(mEvent.getNotes());
 
         // TODO: possibly need to reset hasEdits? it is an instance so probably not

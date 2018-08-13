@@ -3,7 +3,6 @@ package com.example.swugger;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.example.swugger.db.EventDbHelper;
 
 import java.util.HashMap;
 
@@ -51,7 +48,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // 1.
-        mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(mToolbar);
 
         // 2.
@@ -66,13 +63,13 @@ public class HomeActivity extends AppCompatActivity {
         userAccounts.put(inputEmail, inputPassword);
 
         // 5.
-        PagerTabStrip tabStrip = (PagerTabStrip) findViewById(R.id.pager_header);
+        PagerTabStrip tabStrip = (PagerTabStrip) findViewById(R.id.pagertabstrip_main);
         tabStrip.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         tabStrip.setTextColor(Color.WHITE);
         tabStrip.setTabIndicatorColor(Color.WHITE);
 
         // 6.
-        mPager = (ViewPager) findViewById(R.id.view_pager);
+        mPager = (ViewPager) findViewById(R.id.viewpager_main);
         mPagerAdapter = new ScreenSlidePagerAdapter(fragMan);
         mPager.setAdapter(mPagerAdapter);
         mPager.setOffscreenPageLimit(NUM_OF_FRAGMENTS_OFF_SCREEN);
@@ -90,12 +87,12 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case  R.id.toolbar_task_list:
+            case  R.id.debug_toolbar_task_list:
                 // User chose the "Accounts" action.
                 // TODO: list out the tasks and events in a dialogfragment when pressed
                 mPagerAdapter.getEventFrag().printDatabase();
                 return true;
-            case R.id.toolbar_event_list:
+            case R.id.debug_toolbar_event_list:
 
                 return true;
             default:

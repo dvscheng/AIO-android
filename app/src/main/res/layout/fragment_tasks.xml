@@ -7,12 +7,12 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/tasks_recycler_view"
+        android:id="@+id/recyclerView_tasks_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/tasks_fab"
+        android:id="@+id/fab_tasks_fragment"
         app:elevation="4dp"
         app:borderWidth="0dp"
         app:backgroundTint="@color/colorPrimary"

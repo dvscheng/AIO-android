@@ -9,7 +9,7 @@ public class Event implements Serializable {
     private String uuid;
     private String mName;
     private String mNotes;
-    private String mID;
+    private String mId;
     private int month;      // [0-11]
     private int day;
     private int year;
@@ -27,7 +27,7 @@ public class Event implements Serializable {
         this.year = year;
         this.hour = hour;
         this.minute = minute;
-        mID = this.toString();    // assumingg Task.toString() returns a hash.
+        mId = this.toString();    // assumingg Task.toString() returns a hash.
         // creates a universally unique id
         uuid = UUID.randomUUID().toString();
     }
@@ -41,19 +41,19 @@ public class Event implements Serializable {
     public static String convertHourAndMinuteToTimeStamp(int hour, int minute) {
         // TODO: localization of strings AM and PM
         // Handle the labeling of AM or PM
-        String AMorPM = "";
+        String AmOrPm = "";
         if (0 <= hour && hour <= 11) {
-            AMorPM = "AM";
+            AmOrPm = "AM";
         } else if (12 <= hour && hour <= 23) {
-            AMorPM = "PM";
+            AmOrPm = "PM";
         }
 
         // Handle the conversion of hours
-        if (AMorPM.equals("AM")) {
+        if (AmOrPm.equals("AM")) {
             if (hour == 0) {        // this means it's 12AM midnight
                 hour = 12;
             }
-        } else if (AMorPM.equals("PM")) {
+        } else if (AmOrPm.equals("PM")) {
             if (hour != 12) {       // convert from 24hour to 12hour time
                 hour -= 12;
             }
@@ -67,11 +67,11 @@ public class Event implements Serializable {
             strMinute = Integer.toString(minute);
         }
 
-        if (AMorPM.equals("") || strMinute.equals("")) {
+        if (AmOrPm.equals("") || strMinute.equals("")) {
             // Throw an exception because hours and minutes are not within bounds [0-11] and [0-59] respectively
         }
         // return in "HH:mm AM/PM" format.
-        return "" + hour + ":" + strMinute + " " + AMorPM;
+        return "" + hour + ":" + strMinute + " " + AmOrPm;
     }
 
     public String getName() {
@@ -82,8 +82,8 @@ public class Event implements Serializable {
         return mNotes;
     }
 
-    public String getID() {
-        return mID;
+    public String getId() {
+        return mId;
     }
 
     /* NOT zero-indexed. [1-12] */

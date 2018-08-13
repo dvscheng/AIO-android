@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.widget.EditText;
 
-public class Tasks_AddDialogFragment extends DialogFragment {
+public class AddTaskDialogFragment extends DialogFragment {
 
     /** Implements the AddTasksDialogListener so that any Activity
      *  that implements it can retrieve information from this Dialog. */
@@ -35,9 +35,9 @@ public class Tasks_AddDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         // Fetch the EditText fields, convert the text to strings
                         Dialog d = (Dialog) dialog;
-                        mTaskName = (EditText) d.findViewById(R.id.dialog_editText_name);
+                        mTaskName = (EditText) d.findViewById(R.id.editText_name_new_task_dialog);
                         String taskName = mTaskName.getText().toString();
-                        mTaskNotes = (EditText) d.findViewById(R.id.dialog_editText_notes);
+                        mTaskNotes = (EditText) d.findViewById(R.id.editText_notes_new_task_dialog);
                         String taskNotes = mTaskNotes.getText().toString();
 
                         Task task = new Task(taskName, taskNotes);

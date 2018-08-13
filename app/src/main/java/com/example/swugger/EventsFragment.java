@@ -20,7 +20,7 @@ import com.example.swugger.db.EventDbHelper;
 
 import java.util.ArrayList;
 
-public class EventsFragment extends Fragment implements Events_AddDialogFragment.AddEventsDialogListener, Events_EditEventDialogFragment.EditEventsDialogListener {
+public class EventsFragment extends Fragment implements AddEventDialogFragment.AddEventDialogListener, EditEventDialogFragment.EditEventsDialogListener {
 
     private CalendarView mCalendarView;
     private FloatingActionButton mFab;
@@ -158,9 +158,9 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.fragment_events, container, false);
 
-        mCalendarView = (CalendarView) rootView.findViewById(R.id.events_view);
+        mCalendarView = (CalendarView) rootView.findViewById(R.id.calendarView_events_fragment);
         mTargetFragment = this;
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.events_recycler_view);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_events_fragment);
         mDbHelper = new EventDbHelper(getContext());
         mEventList = new ArrayList<>();
 
@@ -173,7 +173,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         currentYear = Integer.parseInt(date.substring(6, 10));
 
         // Specify and set an adapter
-        mRecyclerViewAdapter = new Events_RecyclerViewAdapter(getContext(), mEventList, this, getFragmentManager()); // was rootView
+        mRecyclerViewAdapter = new EventsRecyclerViewAdapter(getContext(), mEventList, this, getFragmentManager()); // was rootView
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         // Set LayoutManager
@@ -183,7 +183,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
         // Re-populate the RecyclerView
         refreshRecyclerView(currentMonth, currentDay, currentYear);
 
-        mFab = (FloatingActionButton) rootView.findViewById(R.id.events_fab);
+        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab_events_fragment);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,7 +191,7 @@ public class EventsFragment extends Fragment implements Events_AddDialogFragment
                         getActivity().getApplication(), R.anim.fab_rotation);
                 mFab.startAnimation(fabRotate);*/
 
-                Events_AddDialogFragment eventDialog = new Events_AddDialogFragment(mCalendarView.getDate());
+                AddEventDialogFragment eventDialog = new AddEventDialogFragment(mCalendarView.getDate());
 
                 eventDialog.setTargetFragment(mTargetFragment, 0);
                 //eventDialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.FullscreenDialogFragmentTheme);       // makes the dialog fullscreen

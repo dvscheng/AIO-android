@@ -15,12 +15,12 @@ import android.widget.Spinner;
  * Created by David on 8/11/2018.
  */
 
-public class Events_AddReminderDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
+public class AddReminderDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
 
     private static final int DAY_SPINNER_DEFAULT_POS = 0;
     private static final int HOUR_SPINNER_DEFAULT_POS = 0;
     private static final int MINUTE_SPINNER_DEFAULT_POS = 15;
-    private Events_EditEventDialogFragment mCallback;       // should be set by caller
+    private EditEventDialogFragment mCallback;       // should be set by caller
     private Spinner mDaySpinner;
     private Spinner mHourSpinner;
     private Spinner mMinuteSpinner;
@@ -34,13 +34,13 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
-            case R.id.reminder_days_spinner:
+            case R.id.spinner_days_new_reminder_dialog:
                 days = Integer.parseInt((String) parent.getItemAtPosition(position));
 
-            case R.id.reminder_hours_spinner:
+            case R.id.spinner_hours_new_reminder_dialog:
                 hours = Integer.parseInt((String) parent.getItemAtPosition(position));
 
-            case R.id.reminder_minutes_spinner:
+            case R.id.spinner_minutes_new_reminder_dialog:
                 minutes = Integer.parseInt((String) parent.getItemAtPosition(position));
         }
     }
@@ -52,7 +52,7 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
 
     /** MUST CALL
      *  Attaches this DialogFragment to another DialogFragment (in this case, the edit events DialogFragment. */
-    public void setTargetDialogFragment(Events_EditEventDialogFragment dialogFragment) {
+    public void setTargetDialogFragment(EditEventDialogFragment dialogFragment) {
         mCallback = dialogFragment;
     }
 
@@ -87,7 +87,7 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
                 });
 
         // set spinners for reminders
-        mDaySpinner = (Spinner) root.findViewById(R.id.reminder_days_spinner);
+        mDaySpinner = (Spinner) root.findViewById(R.id.spinner_days_new_reminder_dialog);
         daySpinnerAdapter = ArrayAdapter.createFromResource(mCallback.getContext(), R.array.reminder_numbers, android.R.layout.simple_spinner_item);
         daySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDaySpinner.setAdapter(daySpinnerAdapter);
@@ -95,7 +95,7 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
         mDaySpinner.setSelection(DAY_SPINNER_DEFAULT_POS);
         days = DAY_SPINNER_DEFAULT_POS;
 
-        mHourSpinner = (Spinner) root.findViewById(R.id.reminder_hours_spinner);
+        mHourSpinner = (Spinner) root.findViewById(R.id.spinner_hours_new_reminder_dialog);
         hourSpinnerAdapter = ArrayAdapter.createFromResource(mCallback.getContext(), R.array.reminder_numbers, android.R.layout.simple_spinner_item);
         hourSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mHourSpinner.setAdapter(hourSpinnerAdapter);
@@ -103,7 +103,7 @@ public class Events_AddReminderDialogFragment extends DialogFragment implements 
         mHourSpinner.setSelection(HOUR_SPINNER_DEFAULT_POS);
         hours = HOUR_SPINNER_DEFAULT_POS;
 
-        mMinuteSpinner = (Spinner) root.findViewById(R.id.reminder_minutes_spinner);
+        mMinuteSpinner = (Spinner) root.findViewById(R.id.spinner_minutes_new_reminder_dialog);
         minuteSpinnerAdapter = ArrayAdapter.createFromResource(mCallback.getContext(), R.array.reminder_numbers, android.R.layout.simple_spinner_item);
         minuteSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mMinuteSpinner.setAdapter(minuteSpinnerAdapter);

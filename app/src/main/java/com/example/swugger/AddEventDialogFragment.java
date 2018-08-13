@@ -11,9 +11,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-public class Events_AddDialogFragment extends DialogFragment {
+public class AddEventDialogFragment extends DialogFragment {
 
-    private AddEventsDialogListener mCallback;
+    private AddEventDialogListener mCallback;
     private EditText mEventName;
     private EditText mEventNotes;
     private DatePicker mDatePicker;
@@ -21,17 +21,17 @@ public class Events_AddDialogFragment extends DialogFragment {
     private long date;
     private Toolbar mToolbar;
 
-    public Events_AddDialogFragment() {
+    public AddEventDialogFragment() {
 
     }
     // TODO: do bundle with args instead of a diff constructor
-    public Events_AddDialogFragment(long date) {
+    public AddEventDialogFragment(long date) {
         this.date = date;
     }
 
     /** Implements the AddTasksDialogListener so that any Activity
      *  that implements it can retrieve information from this Dialog. */
-    public interface AddEventsDialogListener {
+    public interface AddEventDialogListener {
         /** Send data to the Activity in the form of strings STR. */
         void onPositiveClickAdd(Event event);
         void onNegativeClickAdd();
@@ -44,7 +44,7 @@ public class Events_AddDialogFragment extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // Sets Callback to the Activity
-        mCallback = (AddEventsDialogListener) getTargetFragment();
+        mCallback = (AddEventDialogListener) getTargetFragment();
 
         builder.setView(inflater.inflate(R.layout.dialog_new_event, null))
                 .setPositiveButton(R.string.create_event_dialog_accept, new DialogInterface.OnClickListener() {
@@ -52,15 +52,15 @@ public class Events_AddDialogFragment extends DialogFragment {
                         // TODO: can probably take out the initializations of the variables, look into the dialog var passed in here and check if findViewById requires it
                         // Fetch the EditText fields, convert the text to strings
                         Dialog d = (Dialog) dialog;
-                        mEventName = (EditText) d.findViewById(R.id.create_event_dialog_editText_name);
+                        mEventName = (EditText) d.findViewById(R.id.editText_name_new_event_dialog);
                         String eventName = mEventName.getText().toString();
-                        mEventNotes = (EditText) d.findViewById(R.id.create_event_dialog_editText_notes);
+                        mEventNotes = (EditText) d.findViewById(R.id.editText_notes_new_event_dialog);
                         String eventNotes = mEventNotes.getText().toString();
-                        mDatePicker = (DatePicker) d.findViewById(R.id.create_event_dialog_datepicker);
+                        mDatePicker = (DatePicker) d.findViewById(R.id.datePicker_new_event_dialog);
                         int month = mDatePicker.getMonth(); // months are [0-11]
                         int day = mDatePicker.getDayOfMonth();
                         int year = mDatePicker.getYear();
-                        mTimePicker = (TimePicker) d.findViewById(R.id.create_event_dialog_timepicker);
+                        mTimePicker = (TimePicker) d.findViewById(R.id.timePicker_new_event_dialog);
                         int hour = mTimePicker.getCurrentHour(); // hours are [0-23] was deprecated in API level 23 to getHour()
                         int minute = mTimePicker.getCurrentMinute(); // minutes are [0-59] was deprecated in API level 23 to getMinute()
 

@@ -17,7 +17,7 @@ import com.example.swugger.db.TaskDbHelper;
 
 import java.util.List;
 
-public class Tasks_RecyclerViewAdapter extends RecyclerView.Adapter<Tasks_RecyclerViewAdapter.ViewHolder> {
+public class TasksRecyclerViewAdapter extends RecyclerView.Adapter<TasksRecyclerViewAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         // For now, name only
         public TextView mNameTextView;
@@ -27,9 +27,9 @@ public class Tasks_RecyclerViewAdapter extends RecyclerView.Adapter<Tasks_Recycl
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mNameTextView = (TextView) itemView.findViewById(R.id.task_name);
-            mNotesTextView = (TextView) itemView.findViewById(R.id.task_notes);
-            mThisCheckbox = (CheckBox) itemView.findViewById(R.id.check_box);
+            mNameTextView = (TextView) itemView.findViewById(R.id.text_name_task_item);
+            mNotesTextView = (TextView) itemView.findViewById(R.id.text_notes_task_item);
+            mThisCheckbox = (CheckBox) itemView.findViewById(R.id.checkBox_task_item);
             mDeleteButton = (Button) itemView.findViewById(R.id.delete_task_button);
         }
     }
@@ -39,7 +39,7 @@ public class Tasks_RecyclerViewAdapter extends RecyclerView.Adapter<Tasks_Recycl
     private Context mContext;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public Tasks_RecyclerViewAdapter(Context context, List<Task> tasks) {
+    public TasksRecyclerViewAdapter(Context context, List<Task> tasks) {
         mContext = context;
         mTaskList = tasks;
     }
@@ -50,8 +50,8 @@ public class Tasks_RecyclerViewAdapter extends RecyclerView.Adapter<Tasks_Recycl
 
     // Create new views (invoked by the layout manager)
     @Override
-    public Tasks_RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                   int viewType) {
+    public TasksRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                                  int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -65,7 +65,7 @@ public class Tasks_RecyclerViewAdapter extends RecyclerView.Adapter<Tasks_Recycl
 
     // Involves populating data into the item through holder
     @Override
-    public void onBindViewHolder(final Tasks_RecyclerViewAdapter.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(final TasksRecyclerViewAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
         final Task task = mTaskList.get(position);
         task.setCheckBoxView(viewHolder.mThisCheckbox);             // set the checkbox ref in the obj
@@ -76,7 +76,7 @@ public class Tasks_RecyclerViewAdapter extends RecyclerView.Adapter<Tasks_Recycl
         TextView notesTextView = viewHolder.mNotesTextView;
         notesTextView.setText(task.getNotes());
 
-        final Tasks_RecyclerViewAdapter thisAdapter = this;
+        final TasksRecyclerViewAdapter thisAdapter = this;
 
         viewHolder.mThisCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

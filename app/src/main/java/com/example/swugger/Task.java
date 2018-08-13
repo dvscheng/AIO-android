@@ -1,18 +1,17 @@
 package com.example.swugger;
 
-import android.view.View;
 import android.widget.CheckBox;
 
 public class Task {
     private String mName;
     private String mNotes;
-    private String mID;
+    private String mId;
     private CheckBox vCheckBox;
 
     public Task(String name, String notes) {
         mName = name;
         mNotes = notes;
-        mID = this.toString();    // assumingg Task.toString() returns a hash.
+        mId = this.toString();    // assumingg Task.toString() returns a hash.
     }
 
     public String getName() {
@@ -23,9 +22,9 @@ public class Task {
         return mNotes;
     }
 
-    public String getID() { return mID; }
+    public String getId() { return mId; }
 
-    public void setCheckBoxView(CheckBox checkBox) { vCheckBox = checkBox; }        // check Tasks_RecyclerViewAdapter for checkbox ref assignment
+    public void setCheckBoxView(CheckBox checkBox) { vCheckBox = checkBox; }        // check TasksRecyclerViewAdapter for checkbox ref assignment
 
     public CheckBox getCheckBoxView() { return vCheckBox; }
 }

@@ -12,8 +12,7 @@
         android:background="@color/colorAccent"
         android:gravity="center"
         android:text="@string/create_reminder_dialog_msg"
-        android:textSize="12sp"
-        />
+        android:textSize="12sp" />
 
 
     <LinearLayout
@@ -27,29 +26,26 @@
             android:layout_height="24dp"
             android:text="@string/reminder_text_days"
             android:textColor="@color/black"
-            android:gravity="center">
-        </TextView>
+            android:gravity="center" />
 
         <TextView
             android:layout_width="80dp"
             android:layout_height="24dp"
             android:text="@string/reminder_text_hours"
             android:textColor="@color/black"
-            android:gravity="center">
-        </TextView>
+            android:gravity="center" />
 
         <TextView
             android:layout_width="80dp"
             android:layout_height="24dp"
             android:text="@string/reminder_text_minutes"
             android:textColor="@color/black"
-            android:gravity="center">
-        </TextView>
+            android:gravity="center" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/reminder_spinner_layout"
+        android:id="@+id/layout_spinner_new_reminder_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -57,30 +53,24 @@
 
         <Spinner
             style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-            android:id="@+id/reminder_days_spinner"
+            android:id="@+id/spinner_days_new_reminder_dialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:dropDownWidth="64dp"
-            >
-        </Spinner>
+            android:dropDownWidth="64dp" />
 
         <Spinner
             style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-            android:id="@+id/reminder_hours_spinner"
+            android:id="@+id/spinner_hours_new_reminder_dialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:dropDownWidth="64dp">
-        </Spinner>
+            android:dropDownWidth="64dp" />
 
         <Spinner
             style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-            android:id="@+id/reminder_minutes_spinner"
+            android:id="@+id/spinner_minutes_new_reminder_dialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:dropDownWidth="64dp">
-        </Spinner>
+            android:dropDownWidth="64dp" />
 
     </LinearLayout>
-
-
 </LinearLayout>

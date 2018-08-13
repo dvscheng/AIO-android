@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/dialog_toolbar"
+        android:id="@+id/toolbar_new_task_dialog"
         android:title="@string/dialog_create_task_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,13 +27,13 @@
         android:layout_height="match_parent">
 
         <EditText
-            android:id="@+id/dialog_editText_name"
+            android:id="@+id/editText_name_new_task_dialog"
             android:hint="@string/dialog_new_task_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/dialog_editText_notes"
+            android:id="@+id/editText_notes_new_task_dialog"
             android:hint="@string/dialog_new_task_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
