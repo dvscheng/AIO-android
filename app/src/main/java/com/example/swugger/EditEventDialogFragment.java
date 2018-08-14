@@ -99,7 +99,8 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
             reminderDate.setTimeInMillis(eventDate.getTimeInMillis() - totalMilliseconds);
         }
 
-        newRemindersList.add(new Reminder(reminderDateInMilliseconds, daysBefore, hoursBefore, minutesBefore, mEvent.getId()));
+        newRemindersList.add(new Reminder(mEvent.getId(), reminderDateInMilliseconds, daysBefore, hoursBefore, minutesBefore));
+        // TODO: notify reminders adapter of change
     }
 
     @Override

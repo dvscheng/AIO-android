@@ -7,7 +7,6 @@ import android.app.PendingIntent;
  */
 
 public class Reminder {
-    private long id;
     /* The associated event's id. */
     private long eventId;
     /* The exact date (MM/DD/YYYY; HH:mm) in milliseconds of the reminder. */
@@ -17,8 +16,7 @@ public class Reminder {
     private int hoursBefore;
     private int minutesBefore;
 
-    Reminder(long id, long eventId, long timeInMilliseconds, int daysBefore, int hoursBefore, int minutesBefore) {
-        this.id = id;
+    Reminder(long eventId, long timeInMilliseconds, int daysBefore, int hoursBefore, int minutesBefore) {
         this.eventId = eventId;
         this.timeInMilliseconds = timeInMilliseconds;
         this.daysBefore = daysBefore;
@@ -33,8 +31,6 @@ public class Reminder {
     public void cancel() {
 
     }
-
-    public long getId() { return id; }
 
     public long getEventId() {
         return eventId;

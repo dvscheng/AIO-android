@@ -335,7 +335,6 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                 orderByClause                                // The sort order
         );
         // Get info from cursor and add it as an event to mTaskList
-        int colId = cursor.getColumnIndex(ReminderContract.ReminderEntry._ID);
         int colEventId = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID);
         int colMilliseconds = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS);
         int colDaysBefore = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE);
@@ -343,7 +342,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         int colMinutesBefore = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE);
         try {
             while (cursor.moveToNext()) {
-                event.addReminder(new Reminder(cursor.getLong(colId), cursor.getLong(colEventId), cursor.getLong(colMilliseconds),
+                event.addReminder(new Reminder(cursor.getLong(colEventId), cursor.getLong(colMilliseconds),
                                 cursor.getInt(colDaysBefore), cursor.getInt(colHoursBefore), cursor.getInt(colMinutesBefore)));
             }
         } finally {
