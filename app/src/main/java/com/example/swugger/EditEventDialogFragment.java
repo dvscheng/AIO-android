@@ -38,7 +38,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
     private TimePicker mTimePicker;
     private ImageView mDateIcon;
     private ImageView mTimeIcon;
-    private ImageButton mAddRemindersButton;
+    private ImageButton mAddRemindersBtn;
     private ArrayList<Reminder> newRemindersList;
     private TextView mDateText;
     private TextView mTimeText;
@@ -115,7 +115,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
          * boolean dateChanged = whether a new date has been chosen by user
          * boolean timeChanged = whether a new time has been chosen by user
          * the rest are params for an Event */
-        void onPositiveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean reminderAdded,
+        void onPositiveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean remindersChanged,
                                  String newName, String newNotes,
                                  int newMonth, int newDay, int newYear, int newHour, int newMinute,
                                  ArrayList<Reminder> newRemindersList);
@@ -207,8 +207,8 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
             }
         });
 
-        mAddRemindersButton = (ImageButton) root.findViewById(R.id.button_add_reminder_edit_event_dialog);
-        mAddRemindersButton.setOnClickListener(new View.OnClickListener() {
+        mAddRemindersBtn = (ImageButton) root.findViewById(R.id.button_add_reminder_edit_event_dialog);
+        mAddRemindersBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AddReminderDialogFragment addReminderDialog = new AddReminderDialogFragment();

@@ -82,7 +82,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
     /* Positive click for edit event dialog. */
     @Override
-    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean remindersAdded,
+    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean remindersChanged,
                                     String newName, String newNotes,
                                     int newMonth, int newDay, int newYear, int newHour, int newMinute,
                                     ArrayList<Reminder> newRemindersList) {
@@ -133,7 +133,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
 
             // TODO: if time and/or date has changed and updating is successful AND there are existing reminders,
             // TODO: grab the PendingIntents from SharedPrefs using gson and edit them
-            if (remindersAdded) {
+            if (remindersChanged) {
                 // if somehow newRemindersList is empty, something is wrong
                 if (newRemindersList == null) {
                     throw new NullPointerException("indicated that new reminders were to be added, but reminders list is empty, check EventsFragment.onPositiveClickEdit");

@@ -52,7 +52,30 @@ public class Reminder {
 
     @Override
     public String toString() {
-        return Long.toString(timeInMilliseconds)
-                + Integer.toString(daysBefore) + Integer.toString(hoursBefore) + Integer.toString(minutesBefore);
+        String day = "";
+        String hour = "";
+        String minute = "";
+        if (daysBefore != 0) {
+            day += Integer.toString(daysBefore) + " day";
+            if (daysBefore > 1) {
+                day += "s";
+            }
+            day += " ";
+        }
+        if (hoursBefore != 0) {
+            hour += Integer.toString(hoursBefore) + " hour";
+            if (hoursBefore > 1) {
+                hour += "s";
+            }
+            hour += " ";
+        }
+        if (minutesBefore != 0) {
+            minute += Integer.toString(minutesBefore) + " minute";
+            if (minutesBefore > 1) {
+                minute += "s";
+            }
+        }
+
+        return day + hour + minute;
     }
 }
