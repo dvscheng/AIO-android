@@ -16,4 +16,6 @@ public class ReminderWithId extends Reminder {
     private ReminderWithId(long eventId, long timeInMilliseconds, int daysBefore, int hoursBefore, int minutesBefore) {
         super(eventId, timeInMilliseconds, daysBefore, hoursBefore, minutesBefore);
     }
+
+    public long getId() { return id; }
 }

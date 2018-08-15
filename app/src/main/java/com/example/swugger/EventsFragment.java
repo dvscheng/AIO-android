@@ -73,7 +73,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         long newRowId = addToDatabase(eventDbHelper, EventContract.EventEntry.TABLE_NAME, colNames, values);
 
         // Refresh the current RecyclerView to reflect possible changes
-        refreshRecyclerView(currentMonth, currentDay, currentYear);
+        refreshEventRecyclerView(currentMonth, currentDay, currentYear);
     }
     /* Negative click for the fab. */
     @Override
@@ -85,13 +85,13 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean remindersChanged,
                                     String newName, String newNotes,
                                     int newMonth, int newDay, int newYear, int newHour, int newMinute,
-                                    ArrayList<Reminder> newRemindersList) {
+                                    ArrayList<Reminder> newRemindersList, ArrayList<ReminderWithId> remindersToDeleteList) {
         // TODO: get the new event info from the dialog instance and update the event and refresh recyclerview
         SQLiteDatabase db = eventDbHelper.getReadableDatabase();
         if (hasEdits) {
             // find the ONE event with the corresponding id
             String whereClause = EventContract.EventEntry._ID + " =?";
-            String whereArgs[] = new String[]{ Long.toString(origEvent.getId()) };
+            String whereArgs[] = { Long.toString(origEvent.getId()) };
             /*String whereClause = EventContract.EventEntry.COL_EVENT_NAME + " =? AND " +
                     EventContract.EventEntry.COL_EVENT_NOTES + " =? AND " +
                     EventContract.EventEntry.COL_EVENT_MONTH + " =? AND " +
@@ -128,37 +128,55 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             // update the SINGLE row (should not have multiple or no events with these params) and check that only 1 row was updated
             int rowsUpdated = db.update(EventContract.EventEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
             if (rowsUpdated != 1) {
-                throw new SecurityException("we somehow updated not 1 row, but.. " + rowsUpdated + " to be exact. \n" + origEvent.toString());
+                throw new SecurityException("we somehow updated not 1 event, but.. " + rowsUpdated + " to be exact. \n" + origEvent.toString());
             }
 
             // TODO: if time and/or date has changed and updating is successful AND there are existing reminders,
             // TODO: grab the PendingIntents from SharedPrefs using gson and edit them
             if (remindersChanged) {
-                // if somehow newRemindersList is empty, something is wrong
-                if (newRemindersList == null) {
-                    throw new NullPointerException("indicated that new reminders were to be added, but reminders list is empty, check EventsFragment.onPositiveClickEdit");
+                // TODO: remove reminders
+                for (ReminderWithId existingReminder : remindersToDeleteList) {
+                    String whereClauseReminder = ReminderContract.ReminderEntry._ID + " =?";
+                    String[] whereArgsReminder = { Long.toString(existingReminder.getId()) };
+
+                    int rowsDeleted = deleteFromDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, whereClauseReminder, whereArgsReminder);
+                    if (rowsDeleted != 1) {
+                        throw new SecurityException("we somehow deleted not 1 reminder, but.. " + rowsDeleted + " to be exact. \n"
+                                + "reminder info: " + existingReminder.toString() + "\n"
+                                + "event info: " + origEvent.toString());
+                    }
                 }
 
-                // add the reminders
+                // add the reminders (this is PURELY to save to the backend, as reminders are no longer in view of the user)
                 for (Reminder newReminder : newRemindersList) {
-                    String[] colNames = {
-                            ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID,
-                            ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS,
-                            ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE,
-                            ReminderContract.ReminderEntry.COL_REMINDER_HOURS_BEFORE,
-                            ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE };
-                    String[] values = {
-                            Long.toString(newReminder.getEventId()),
-                            Long.toString(newReminder.getTimeInMilliseconds()),
-                            Integer.toString(newReminder.getDaysBefore()),
-                            Integer.toString(newReminder.getHoursBefore()),
-                            Integer.toString(newReminder.getMinutesBefore()) };
-                    long newRowId = addToDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, colNames, values);
+                    // If the original event cannot add any more reminders, we're finished
+                    if (!origEvent.canAddReminder()) { break; }
+
+                    // If the original event already has reminders set at this new reminder's time, continue to the next newReminder
+                    if (!origEvent.isDuplicateReminder(newReminder)) {
+                        // If there isn't already a reminder with the new reminder's time, add it to the event and database
+                        String[] colNames = {
+                                ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID,
+                                ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS,
+                                ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE,
+                                ReminderContract.ReminderEntry.COL_REMINDER_HOURS_BEFORE,
+                                ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE
+                        };
+                        String[] values = {
+                                Long.toString(newReminder.getEventId()),
+                                Long.toString(newReminder.getTimeInMilliseconds()),
+                                Integer.toString(newReminder.getDaysBefore()),
+                                Integer.toString(newReminder.getHoursBefore()),
+                                Integer.toString(newReminder.getMinutesBefore())
+                        };
+                        long newRowId = addToDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, colNames, values);
+                    }
                 }
+                refreshReminders(origEvent);        // TODO: this could be more efficient by updating locally rather than retrieving all reminders again
             }
 
             // the old event should disappear (if appropriate) and RecyclerView should be re-sorted and updated
-            refreshRecyclerView(currentMonth, currentDay, currentYear);
+            refreshEventRecyclerView(currentMonth, currentDay, currentYear);
         }
     }
     /* Negative click for edit event dialog. */
@@ -200,7 +218,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         mRecyclerView.setLayoutManager(mRecyclerViewLayoutManager);
 
         // Re-populate the RecyclerView
-        refreshRecyclerView(currentMonth, currentDay, currentYear);
+        refreshEventRecyclerView(currentMonth, currentDay, currentYear);
 
         mFab = (FloatingActionButton) rootView.findViewById(R.id.fab_events_fragment);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -234,7 +252,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                 currentMonth = month;
                 currentDay = dayOfMonth;
                 currentYear = year;
-                refreshRecyclerView(month, dayOfMonth, year);   // months from [0-11] already
+                refreshEventRecyclerView(month, dayOfMonth, year);   // months from [0-11] already
             }
         });
 
@@ -242,8 +260,8 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
 
     /** Updates the RecyclerView list (removes all elements and then re-populates) according to the selected date. */
-    private void refreshRecyclerView(int month, int day, int year) {
-        // should remove everything in the list because of reference
+    private void refreshEventRecyclerView(int month, int day, int year) {
+        // should remove everything in the attached adapter's list because of reference
         mEventList.clear();
 
         // convert from epoch to readable time
@@ -259,7 +277,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     private void retrieveAndPopulateEvents(String currentMonth, String currentDay, String currentYear) {
         // Read information from SQLDatabase
         SQLiteDatabase db = eventDbHelper.getReadableDatabase();
-        // db.execSQL("DROP TABLE IF EXISTS events");
+        // db.execSQL("DROP TABLE IF EXISTS even");
         // eventDbHelper.onCreate(db);
         String[] projection = {
                 EventContract.EventEntry._ID,
@@ -274,7 +292,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         String whereClause = EventContract.EventEntry.COL_EVENT_MONTH + " =? AND " +
                 EventContract.EventEntry.COL_EVENT_DAY + " =? AND " +
                 EventContract.EventEntry.COL_EVENT_YEAR + " =?";
-        String[] whereArgs = new String[]{currentMonth, currentDay, currentYear};
+        String[] whereArgs = { currentMonth, currentDay, currentYear };
         String orderByClause = EventContract.EventEntry.COL_EVENT_HOUR + " ASC";
         // Get the information as a Cursor by calling db.query()
         Cursor cursor = db.query(
@@ -311,11 +329,18 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             cursor.close();
         }
     }
-    /** Retrieve Reminders from the database and then populate the provided event's RemindersList */
+    private void refreshReminders(Event event) {
+        event.clearReminders();
+
+        retrieveAndPopulateReminders(event);
+    }
+    /** SHOULD ONLY BE CALLED BY refreshReminders.
+     *  Retrieve Reminders from the database and then populate the provided event's RemindersList */
     private void retrieveAndPopulateReminders(Event event) {
         SQLiteDatabase db = reminderDbHelper.getReadableDatabase();
 
         String[] projection = {
+                ReminderContract.ReminderEntry._ID,
                 ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID,
                 ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS,
                 ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE,
@@ -323,7 +348,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                 ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE
         };
         String whereClause = ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID + " =?";
-        String[] whereArgs = new String[] { Long.toString(event.getId()) };
+        String[] whereArgs = { Long.toString(event.getId()) };
         String orderByClause = ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS + " ASC";
         Cursor cursor = db.query(
                 ReminderContract.ReminderEntry.TABLE_NAME,                      // The table to query
@@ -335,6 +360,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                 orderByClause                                // The sort order
         );
         // Get info from cursor and add it as an event to mTaskList
+        int colId = cursor.getColumnIndex(ReminderContract.ReminderEntry._ID);
         int colEventId = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID);
         int colMilliseconds = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS);
         int colDaysBefore = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE);
@@ -342,7 +368,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         int colMinutesBefore = cursor.getColumnIndex(ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE);
         try {
             while (cursor.moveToNext()) {
-                event.addReminder(new Reminder(cursor.getLong(colEventId), cursor.getLong(colMilliseconds),
+                event.addReminder(new ReminderWithId(cursor.getLong(colId), cursor.getLong(colEventId), cursor.getLong(colMilliseconds),
                                 cursor.getInt(colDaysBefore), cursor.getInt(colHoursBefore), cursor.getInt(colMinutesBefore)));
             }
         } finally {
@@ -366,6 +392,15 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
 
         long newRowId = db.insert(tableName, null, contentValues);
         return newRowId;
+    }
+    /** Removes appropriate rows from the given database, returns the number of rows affected. */
+    private int deleteFromDatabase(SQLiteOpenHelper dbHelper, String tableName, String whereClause, String[] whereArgs) {
+        // TODO: sql insecure
+        // Delete info from the database
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        int rowsDeleted = db.delete(tableName, whereClause, whereArgs);
+        return rowsDeleted;
     }
     /** Used for Debugging, print all rows of the given database. */
     // TODO: make it a static method of an appropriate class

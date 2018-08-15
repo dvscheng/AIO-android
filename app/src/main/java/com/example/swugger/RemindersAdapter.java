@@ -1,14 +1,11 @@
 package com.example.swugger;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -20,6 +17,16 @@ import java.util.List;
  */
 
 public class RemindersAdapter extends ArrayAdapter<Reminder> {
+
+    /** Implements the RemindersAdapterListener so that any Activity
+     *  that implements it can retrieve information from this Dialog. */
+    public interface RemindersAdapterListener {
+        /** boolean hasEdits = whether ANY attribute has been edited by user
+         * boolean dateChanged = whether a new date has been chosen by user
+         * boolean timeChanged = whether a new time has been chosen by user
+         * the rest are params for an Event */
+        void onDeleteReminder(Reminder reminder);
+    }
 
     public class ViewHolder {
         public final View itemView;
@@ -36,14 +43,19 @@ public class RemindersAdapter extends ArrayAdapter<Reminder> {
         }
     }
 
-    public final int MAX_NUM_OF_REMINDERS = 3;
+    private RemindersAdapterListener mRemindersAdapterListener;
     private Context mContext;
     private List<Reminder> remindersList;
 
-    public RemindersAdapter(Context context, int resource, @NonNull ArrayList<Reminder> objects) {
-        super(context, resource, objects);
+    public RemindersAdapter(RemindersAdapterListener remindersAdapterListener, Context context, int resource, @NonNull ArrayList<Reminder> objects) {
+        this(context, resource, objects);
+        mRemindersAdapterListener = remindersAdapterListener;
         mContext = context;
         remindersList = objects;
+    }
+
+    private RemindersAdapter(Context context, int resource, @NonNull ArrayList<Reminder> objects) {
+        super(context, resource, objects);
     }
 
     @Override
@@ -65,6 +77,7 @@ public class RemindersAdapter extends ArrayAdapter<Reminder> {
             @Override
             public void onClick(View v) {
                 // TODO: tell the EditEventDialogFragment that this reminder is to be deleted
+                mRemindersAdapterListener.onDeleteReminder(reminder);
             }
         });
 

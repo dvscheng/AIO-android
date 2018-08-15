@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class EditEventDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, AddReminderDialogFragment.AddReminderDialogListener {
+public class EditEventDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, AddReminderDialogFragment.AddReminderDialogListener, RemindersAdapter.RemindersAdapterListener {
 
     public static final long millisecondsPerDay = 86400000;
     public static final long millisecondsPerHour = 3600000;
@@ -39,7 +39,10 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
     private ImageView mDateIcon;
     private ImageView mTimeIcon;
     private ImageButton mAddRemindersBtn;
+    private RemindersAdapter mRemindersAdapter;
+    private ArrayList<Reminder> displayedRemindersList;
     private ArrayList<Reminder> newRemindersList;
+    private ArrayList<ReminderWithId> remindersToDeleteList;
     private TextView mDateText;
     private TextView mTimeText;
     private EditText mNameText;
@@ -79,6 +82,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         }
     }
 
+    /** This method should not be called when Event.MAX_NUM_REMINDERS is reached because the button should be invisible.*/
     @Override
     public void onPositiveClickAddReminder(Integer daysBefore, Integer hoursBefore, Integer minutesBefore) {
         long daysMilliseconds = daysBefore.longValue() * millisecondsPerDay;      // if days is super huge (not likely), watch for overflows
@@ -99,13 +103,31 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
             reminderDate.setTimeInMillis(eventDate.getTimeInMillis() - totalMilliseconds);
         }
 
+        // Create separate Reminder objects in case we need to modify them later
         newRemindersList.add(new Reminder(mEvent.getId(), reminderDateInMilliseconds, daysBefore, hoursBefore, minutesBefore));
+        displayedRemindersList.add(new Reminder(mEvent.getId(), reminderDateInMilliseconds, daysBefore, hoursBefore, minutesBefore));
+
         // TODO: notify reminders adapter of change
+        mRemindersAdapter.notifyDataSetChanged();
+
+        // TODO: make the add reminder button invisible
+        mAddRemindersBtn.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void onNegativeClickAddReminder() {
         // Do nothing.
+    }
+
+    @Override
+    public void onDeleteReminder(Reminder reminder) {
+        // If the reminder has an Id, this means it's been added to the database and therefore must have its alarm canceled.
+        if (reminder instanceof ReminderWithId) {
+            remindersToDeleteList.add((ReminderWithId) reminder);
+        }
+        displayedRemindersList.remove(reminder);
+
+        mRemindersAdapter.notifyDataSetChanged();
     }
 
     /** Implements the EditEventsDialogListener so that any Activity
@@ -118,15 +140,17 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         void onPositiveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean remindersChanged,
                                  String newName, String newNotes,
                                  int newMonth, int newDay, int newYear, int newHour, int newMinute,
-                                 ArrayList<Reminder> newRemindersList);
+                                 ArrayList<Reminder> newRemindersList, ArrayList<ReminderWithId> remindersToDeleteList);
         void onNegativeClickEdit();
     }
 
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         thisDialog = this;
-        // Sets Callback to the Activity/Fragment
         mCallback = (EditEventsDialogListener) getTargetFragment();
+        displayedRemindersList = new ArrayList<>(mEvent.getRemindersList());
+        newRemindersList = new ArrayList<>();
+        remindersToDeleteList = new ArrayList<>();
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // the content
@@ -177,7 +201,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
                 mCallback.onPositiveClickEdit(mEvent, hasBeenEdited(), dateChanged(), timeChanged(), reminderAdded(),
                                                 newName, newNotes,
                                                 newMonth, newDay, newYear, newHour, newMinute,
-                                                newRemindersList);
+                                                newRemindersList, remindersToDeleteList);
                 dialog.dismiss();
             }
         });
@@ -206,6 +230,8 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
                 timePickerDialog.show();
             }
         });
+
+        mRemindersAdapter = new RemindersAdapter(this, getContext(), R.layout.item_reminder, displayedRemindersList);
 
         mAddRemindersBtn = (ImageButton) root.findViewById(R.id.button_add_reminder_edit_event_dialog);
         mAddRemindersBtn.setOnClickListener(new View.OnClickListener() {
@@ -267,6 +293,16 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
     /** Checks whether the user has added reminders. */
     private boolean reminderAdded() {
         return !newRemindersList.isEmpty();
+    }
+
+    private void cancelAlarm(ReminderWithId reminder) {
+        // TODO: take id to remove w/ AlarmManager(?)
+    }
+
+    private void deleteReminder(Reminder reminder) {
+        // TODO: notify remindersadapter
+        newRemindersList.remove(reminder);
+        mRemindersAdapter.notifyDataSetChanged();
     }
 
     private ArrayList<PendingIntent> createAndStoreAlarmPendingIntents(Event event) {

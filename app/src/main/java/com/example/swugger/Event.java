@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Event implements Serializable {
+
     public static final String SERIALIZE_KEY = "event";
+    public static final int MAX_NUM_OF_REMINDERS = 3;
     private long id;
     private String name;
     private String notes;
@@ -29,12 +31,13 @@ public class Event implements Serializable {
         // creates a universally unique id
     }
 
-    /*  Converts epoch (long) to a date in readable format. */
+    /**  Converts epoch (long) to a date in readable format. */
     public static String convertEpochToReadableDate(long date) {
         // from https://www.epochconverter.com/
         return new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date(date));
     }
 
+    /** Converts the given hour and minute to an AM/PM, readable timestamp (i.e. "7:23 PM"). */
     public static String convertHourAndMinuteToTimeStamp(int hour, int minute) {
         // TODO: localization of strings AM and PM
         // Handle the labeling of AM or PM
@@ -74,43 +77,57 @@ public class Event implements Serializable {
     public long getId() {
         return id;
     }
-
     public String getName() {
         return name;
     }
-
     public String getNotes() {
         return notes;
     }
-
     /** Zero-indexed. [0-11] */
     public int getMonth() {
         return month;
     }
-
     public int getDay() {
         return day;
     }
-
     public int getYear() {
         return year;
     }
-
     /** Zero-indexed. [0-23] */
     public int getHour() {
         return hour;
     }
-
     /** Zero-indexed. [0-59] */
     public int getMinute() {
         return minute;
     }
+    public ArrayList<Reminder> getRemindersList() { return remindersList; }
+    /** Clears the remindersList ArrayList. */
+    public void clearReminders() {
+        remindersList.clear();
+    }
+    /** Returns whether more reminders can be set for this event. */
+    public boolean canAddReminder() {
+        return remindersList.size() < MAX_NUM_OF_REMINDERS;
+    }
 
-    public void addReminder(Reminder newReminder) {
+    public void addReminder(ReminderWithId newReminder) {
         if (newReminder == null) {
             throw new NullPointerException("attempted to add a null Reminder object, check Event.addReminder()");
         }
         remindersList.add(newReminder);
+    }
+
+    /** Checks whether or not this event already has a reminder set at the given new reminder's time. */
+    public boolean isDuplicateReminder(Reminder reminder) {
+        for (Reminder existingReminder : remindersList) {
+            if (existingReminder.getDaysBefore() == reminder.getDaysBefore()
+                    && existingReminder.getHoursBefore() == reminder.getHoursBefore()
+                    && existingReminder.getMinutesBefore() == reminder.getMinutesBefore()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
