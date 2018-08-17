@@ -9,14 +9,14 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/toolbar_dialog_edit_event"
+        android:id="@+id/toolbar_edit_event_dialog"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/colorAccentTeal"
+        android:background="@color/colorPrimary"
         android:elevation="3dp">
 
         <ImageButton
-            android:id="@+id/back_toolbar_dialog_edit_event"
+            android:id="@+id/button_back_edit_event_dialog"
             android:layout_width="72dp"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
@@ -26,7 +26,7 @@
             android:background="?selectableItemBackground" />
 
         <ImageButton
-            android:id="@+id/save_toolbar_dialog_edit_event"
+            android:id="@+id/button_save_edit_event_dialog"
             android:layout_width="78dp"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
@@ -38,22 +38,22 @@
     </RelativeLayout>
     
     <LinearLayout
-        android:id="@+id/date_time_block_dialog_edit_event"
+        android:id="@+id/block_date_time_reminder_edit_event_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_below="@+id/toolbar_dialog_edit_event"
+        android:layout_below="@+id/toolbar_edit_event_dialog"
         android:orientation="vertical">
 
         <RelativeLayout
-            android:id="@+id/layout_date_dialog_edit_event"
+            android:id="@+id/layout_date_edit_event_dialog"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:layout_marginTop="12dp">
+            android:layout_height="48dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:background="?selectableItemBackground">
 
             <ImageView
-                android:id="@+id/image_layout_date_dialog_edit_event"
+                android:id="@+id/image_date_edit_event_dialog"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_today_black_24dp"
@@ -61,10 +61,10 @@
                 android:layout_alignParentLeft="true" />
 
             <TextView
-                android:id="@+id/date_dialog_edit_event"
+                android:id="@+id/text_date_edit_event_dialog"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_toRightOf="@+id/image_layout_date_dialog_edit_event"
+                android:layout_toRightOf="@+id/image_date_edit_event_dialog"
                 android:gravity="center"
                 android:textSize="20sp"
                 tools:text="fsadfsdafsa" />
@@ -72,14 +72,15 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/layout_time_dialog_edit_event"
+            android:id="@+id/layout_time_edit_event_dialog"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp">
+            android:layout_height="48dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:background="?selectableItemBackground">
 
             <ImageView
-                android:id="@+id/image_layout_time_dialog_edit_event"
+                android:id="@+id/image_time_edit_event_dialog"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_access_time_black_24dp"
@@ -87,62 +88,87 @@
                 android:layout_alignParentLeft="true" />
 
             <TextView
-                android:id="@+id/time_dialog_edit_event"
+                android:id="@+id/text_time_edit_event_dialog"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_toRightOf="@+id/image_layout_time_dialog_edit_event"
+                android:layout_toRightOf="@+id/image_time_edit_event_dialog"
                 android:gravity="center"
                 android:textSize="20sp"
                 tools:text="fsadfsdafsa" />
 
         </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_reminder_edit_event_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
+
+            <ImageView
+                android:id="@+id/image_reminder_edit_event_dialog"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_timer_black_24dp"
+                android:layout_centerInParent="true"
+                android:layout_alignParentLeft="true" />
+
+            <ImageButton
+                android:id="@+id/button_add_reminder_edit_event_dialog"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_add_black_18dp"
+                android:scaleType="centerInside"
+                android:layout_alignParentRight="true"
+                android:background="?selectableItemBackground" />
+
+        </RelativeLayout>
     </LinearLayout>
 
     <View
-        android:id="@+id/date_name_separator_dialog_edit_event"
+        android:id="@+id/separator_date_name_edit_event_dialog"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:layout_marginBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@id/date_time_block_dialog_edit_event"
-        android:background="@color/colorAccentLite" />
+        android:layout_below="@id/block_date_time_reminder_edit_event_dialog"
+        android:background="@color/colorAccent" />
 
     <LinearLayout
-        android:id="@+id/name_notes_block_dialog_edit_event"
+        android:id="@+id/block_name_notes_edit_event_dialog"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_below="@+id/date_name_separator_dialog_edit_event"
+        android:layout_below="@+id/separator_date_name_edit_event_dialog"
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/name_dialog_edit_event"
+            android:id="@+id/editText_name_edit_event_dialog"
             android:hint="@string/create_event_dialog_event_name"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@null">
-        </EditText>
+            android:background="@null" />
 
         <View
-            android:id="@+id/name_notes_separator_dialog_edit_event"
+            android:id="@+id/separator_name_notes_edit_event_dialog"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/colorAccentLite" />
+            android:background="@color/colorAccent" />
 
         <EditText
-            android:id="@+id/notes_dialog_edit_event"
+            android:id="@+id/editText_notes_edit_event_dialog"
             android:hint="@string/create_event_dialog_event_notes"
             android:background="@null"
             android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/gray">
-        </EditText>
+            android:textColor="@color/gray" />
 
     </LinearLayout>
 

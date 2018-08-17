@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <CalendarView
-        android:id="@+id/events_view"
+        android:id="@+id/calendarView_events_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorBackgroundFloating"
@@ -18,27 +18,25 @@
     <!--TODO: change text programmatically according to date -->
     <!--TODO: darker grey text color -->
     <TextView
-        android:id="@+id/events_calendar_separator"
+        android:id="@+id/separator_events_calendar_events_fragment"
         android:layout_width="match_parent"
         android:layout_height="24dp"
-        android:layout_below="@id/events_view"
-        android:background="@color/colorAccentLite"
+        android:layout_below="@id/calendarView_events_fragment"
+        android:background="@color/colorAccent"
         android:textAlignment="center"
-        android:text="@string/event_calendar_separator_text"
-        />
+        android:text="@string/event_calendar_separator_text" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/events_recycler_view"
+        android:id="@+id/recyclerView_events_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/events_calendar_separator"
-        />
+        android:layout_below="@+id/separator_events_calendar_events_fragment" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/events_fab"
+        android:id="@+id/fab_events_fragment"
         app:elevation="4dp"
         app:borderWidth="0dp"
-        app:backgroundTint="@color/colorAccentTeal"
+        app:backgroundTint="@color/colorPrimary"
         android:src="@drawable/ic_today_black_24dp"
         android:tint="@color/white"
         android:layout_width="wrap_content"
@@ -46,6 +44,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp" />
 
 </RelativeLayout>

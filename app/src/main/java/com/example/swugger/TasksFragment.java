@@ -21,7 +21,7 @@ import com.example.swugger.db.TaskDbHelper;
 import java.util.ArrayList;
 
 
-public class TasksFragment extends Fragment implements Tasks_AddDialogFragment.AddTasksDialogListener {
+public class TasksFragment extends Fragment implements AddTaskDialogFragment.AddTasksDialogListener {
 
     private FloatingActionButton mFab;
     private ArrayList<Task> mTaskList;
@@ -79,7 +79,7 @@ public class TasksFragment extends Fragment implements Tasks_AddDialogFragment.A
                 R.layout.fragment_tasks, container, false);
 
         /* RecyclerView stuff */
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.tasks_recycler_view);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_tasks_fragment);
 
         // Initialize the mDbHelper and mTaskList
         mDbHelper = new TaskDbHelper(getContext());
@@ -115,7 +115,7 @@ public class TasksFragment extends Fragment implements Tasks_AddDialogFragment.A
         }
 
         // Specify and set an adapter
-        mRecyclerViewAdapter = new Tasks_RecyclerViewAdapter(getContext(), mTaskList); // was rootView
+        mRecyclerViewAdapter = new TasksRecyclerViewAdapter(getContext(), mTaskList); // was rootView
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         // Set LayoutManager
@@ -125,7 +125,7 @@ public class TasksFragment extends Fragment implements Tasks_AddDialogFragment.A
         mTargetFragment = this;
 
         // Creates a FAB
-        mFab = (FloatingActionButton) rootView.findViewById(R.id.tasks_fab);
+        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab_tasks_fragment);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,7 +133,7 @@ public class TasksFragment extends Fragment implements Tasks_AddDialogFragment.A
                         getActivity().getApplication(), R.anim.fab_rotation);
                 mFab.startAnimation(fabRotate);
 
-                Tasks_AddDialogFragment tasksDialog = new Tasks_AddDialogFragment();
+                AddTaskDialogFragment tasksDialog = new AddTaskDialogFragment();
 
                 tasksDialog.setTargetFragment(mTargetFragment, 0);
                 tasksDialog.show(getActivity().getSupportFragmentManager(), "new task");
@@ -141,5 +141,26 @@ public class TasksFragment extends Fragment implements Tasks_AddDialogFragment.A
         });
 
         return rootView;
+    }
+
+    /** Used for Debugging, print all rows of the given database. */
+    // TODO: make it a static method of an appropriate class
+    public void printDatabase() {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        String tableString = String.format("Table %s:\n", TaskContract.TaskEntry.TABLE_NAME);
+        Cursor allRows  = db.rawQuery("SELECT * FROM " + TaskContract.TaskEntry.TABLE_NAME, null);
+        if (allRows.moveToFirst() ){
+            String[] columnNames = allRows.getColumnNames();
+            do {
+                for (String name: columnNames) {
+                    tableString += String.format("%s: %s ", name,
+                            allRows.getString(allRows.getColumnIndex(name)));
+                }
+                tableString += "\n";
+
+            } while (allRows.moveToNext());
+        }
+        allRows.close();
+        System.out.println(tableString);
     }
 }

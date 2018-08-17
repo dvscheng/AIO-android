@@ -5,7 +5,7 @@
     android:layout_height="48dp">
     
     <CheckBox
-        android:id="@+id/check_box"
+        android:id="@+id/checkBox_task_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true" />
@@ -14,22 +14,22 @@
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/check_box">
+        android:layout_toEndOf="@+id/checkBox_task_item" >
 
         <TextView
-            android:id="@+id/task_name"
+            android:id="@+id/text_name_task_item"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
         <!--  VVV shows the 'notes' of the task -->
 
         <TextView
-            android:id="@+id/task_notes"
+            android:id="@+id/text_notes_task_item"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
     </LinearLayout>
 

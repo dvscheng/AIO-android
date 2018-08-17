@@ -10,6 +10,7 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
     /** The number of pages defaulted to 3 (email, calender, tasks). */
     private static final int NUM_PAGES = 3;
     private EventsFragment mEventFrag;
+    private TasksFragment mTaskFrag;
 
     public ScreenSlidePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -26,7 +27,8 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
             mEventFrag = new EventsFragment();
             return mEventFrag;
         } else if (position == 2) {
-            return new TasksFragment();
+            mTaskFrag = new TasksFragment();
+            return mTaskFrag;
         } else {
             throw new IllegalArgumentException(
                     "call getItem(" + position + ") is illegal, 0 <= arg < 3");
@@ -52,4 +54,5 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         return NUM_PAGES;
     }
     public EventsFragment getEventFrag() { return mEventFrag; }
+    public TasksFragment getTaskFrag() { return mTaskFrag; }
 }

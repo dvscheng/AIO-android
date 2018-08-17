@@ -77,12 +77,12 @@ public class EmailFragment extends Fragment {
 
 
         /* Get a reference to the RecyclerView view(?). */
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.email_recycler_view);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_email_gmail_api_test);
 
         // Specify and set an adapter
         // for now the adapter just takes an empty list (later we want the emails)
         List<Task> taskList = new ArrayList<>();
-        mRecyclerViewAdapter = new Tasks_RecyclerViewAdapter(getContext(), taskList); // was rootView
+        mRecyclerViewAdapter = new TasksRecyclerViewAdapter(getContext(), taskList); // was rootView
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -93,7 +93,7 @@ public class EmailFragment extends Fragment {
         mTargetFragment = this;
 
         /* Gmail API */
-        mOutputText = (TextView) rootView.findViewById(R.id.gmail_API_test_text);
+        mOutputText = (TextView) rootView.findViewById(R.id.text_gmail_api_test);
         mOutputText.setText("Click the button to test the API.");
 
         mProgress = new ProgressDialog(getContext());

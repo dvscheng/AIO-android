@@ -12,15 +12,15 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_RecyclerViewAdapter.ViewHolder> {
+public class EventsRecyclerViewAdapter extends RecyclerView.Adapter<EventsRecyclerViewAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mNameTextView;
         public TextView mTimeTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mNameTextView = (TextView) itemView.findViewById(R.id.event_name);
-            mTimeTextView = (TextView) itemView.findViewById(R.id.event_time);
+            mNameTextView = (TextView) itemView.findViewById(R.id.text_name_event_item);
+            mTimeTextView = (TextView) itemView.findViewById(R.id.text_time_event_item);
         }
     }
 
@@ -30,8 +30,8 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
     private FragmentManager mFragMan;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public Events_RecyclerViewAdapter(Context context, List<Event> events, Fragment eventsFragment,
-                                      FragmentManager fragMan) {
+    public EventsRecyclerViewAdapter(Context context, List<Event> events, Fragment eventsFragment,
+                                     FragmentManager fragMan) {
         mContext = context;
         mEventList = events;
         mEventsFragment = eventsFragment;
@@ -44,8 +44,8 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
 
     // Create new views (invoked by the layout manager)
     @Override
-    public Events_RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                    int viewType) {
+    public EventsRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                                   int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -59,7 +59,7 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
 
     // Involves populating data into the item through holder
     @Override
-    public void onBindViewHolder(final Events_RecyclerViewAdapter.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(final EventsRecyclerViewAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
         final Event event = mEventList.get(position);
 
@@ -75,7 +75,7 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Events_EditEventDialogFragment eventDialog = new Events_EditEventDialogFragment();
+                EditEventDialogFragment eventDialog = new EditEventDialogFragment();
 
                 // pass in the event object into the edit dialog
                 Bundle args = new Bundle();
@@ -89,7 +89,7 @@ public class Events_RecyclerViewAdapter extends RecyclerView.Adapter<Events_Recy
         });
 
 
-        final Events_RecyclerViewAdapter thisAdapter = this;
+        final EventsRecyclerViewAdapter thisAdapter = this;
     }
 
     // Return the size of your dataset (invoked by the layout manager)
