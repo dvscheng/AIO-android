@@ -136,10 +136,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             if (remindersChanged) {
                 // TODO: remove reminders
                 for (ReminderWithId existingReminder : remindersToDeleteList) {
-                    String whereClauseReminder = ReminderContract.ReminderEntry._ID + " =?";
-                    String[] whereArgsReminder = { Long.toString(existingReminder.getId()) };
-
-                    int rowsDeleted = deleteFromDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, whereClauseReminder, whereArgsReminder);
+                    int rowsDeleted = deleteAndCancelReminder(existingReminder);
                     if (rowsDeleted != 1) {
                         throw new SecurityException("we somehow deleted not 1 reminder, but.. " + rowsDeleted + " to be exact. \n"
                                 + "reminder info: " + existingReminder.toString() + "\n"
@@ -400,6 +397,17 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         int rowsDeleted = db.delete(tableName, whereClause, whereArgs);
+        return rowsDeleted;
+    }
+    /** Removes the reminder from the database and cancels its associated alarm. Returns the number of rows deleted from the database. */
+    private int deleteAndCancelReminder(ReminderWithId existingReminder) {
+        String whereClauseReminder = ReminderContract.ReminderEntry._ID + " =?";
+        String[] whereArgsReminder = { Long.toString(existingReminder.getId()) };
+
+        int rowsDeleted = deleteFromDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, whereClauseReminder, whereArgsReminder);
+
+        // TODO: cancel the alarm
+
         return rowsDeleted;
     }
     /** Used for Debugging, print all rows of the given database. */

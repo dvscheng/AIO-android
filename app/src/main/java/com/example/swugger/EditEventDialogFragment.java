@@ -14,6 +14,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -40,6 +41,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
     private ImageView mTimeIcon;
     private ImageButton mAddRemindersBtn;
     private RemindersAdapter mRemindersAdapter;
+    private ListView mDisplayedRemindersListView;
     private ArrayList<Reminder> displayedRemindersList;
     private ArrayList<Reminder> newRemindersList;
     private ArrayList<ReminderWithId> remindersToDeleteList;
@@ -148,9 +150,12 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         thisDialog = this;
         mCallback = (EditEventsDialogListener) getTargetFragment();
+        // grabs the Event object corresponding to the event ItemView
+        mEvent = (Event) getArguments().getSerializable(Event.SERIALIZE_KEY);
         displayedRemindersList = new ArrayList<>(mEvent.getRemindersList());
         newRemindersList = new ArrayList<>();
         remindersToDeleteList = new ArrayList<>();
+
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // the content
@@ -164,9 +169,6 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         // dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));       // mandatory for fullscreen... why?
         // dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         dialog.getWindow().getAttributes().windowAnimations = R.style.FullscreenDialogFragmentAnimation;
-
-        // grabs the Event object corresponding to the event ItemView
-        mEvent = (Event) getArguments().getSerializable(Event.SERIALIZE_KEY);
 
         // add listeners to back and save buttons
         mBackButton = (ImageButton) root.findViewById(R.id.button_back_edit_event_dialog);
@@ -232,6 +234,8 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         });
 
         mRemindersAdapter = new RemindersAdapter(this, getContext(), R.layout.item_reminder, displayedRemindersList);
+        mDisplayedRemindersListView = (ListView) root.findViewById(R.id.listView_reminder_edit_event_dialog);
+        mDisplayedRemindersListView.setAdapter(mRemindersAdapter);
 
         mAddRemindersBtn = (ImageButton) root.findViewById(R.id.button_add_reminder_edit_event_dialog);
         mAddRemindersBtn.setOnClickListener(new View.OnClickListener() {

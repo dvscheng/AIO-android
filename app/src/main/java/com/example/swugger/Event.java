@@ -28,6 +28,7 @@ public class Event implements Serializable {
         this.year = year;
         this.hour = hour;
         this.minute = minute;
+        remindersList = new ArrayList<>();
         // creates a universally unique id
     }
 
