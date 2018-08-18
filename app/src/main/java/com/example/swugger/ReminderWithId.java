@@ -18,4 +18,7 @@ public class ReminderWithId extends Reminder {
     }
 
     public long getId() { return id; }
+
+    @Override
+    public boolean isSavedReminder() { return true; }
 }

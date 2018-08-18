@@ -8,7 +8,7 @@ public final class ReminderContract {
     private ReminderContract() {}
 
     public static class ReminderEntry implements BaseColumns {
-        public static final String TABLE_NAME = "events";
+        public static final String TABLE_NAME = "reminders";
         public static final String COL_REMINDER_EVENT_ID = "event_id";
         public static final String COL_REMINDER_MILLISECONDS = "month";
         public static final String COL_REMINDER_DAYS_BEFORE = "days_before";

@@ -107,10 +107,6 @@ public class Event implements Serializable {
     public void clearReminders() {
         remindersList.clear();
     }
-    /** Returns whether more reminders can be set for this event. */
-    public boolean canAddReminder() {
-        return remindersList.size() < MAX_NUM_OF_REMINDERS;
-    }
 
     public void addReminder(ReminderWithId newReminder) {
         if (newReminder == null) {

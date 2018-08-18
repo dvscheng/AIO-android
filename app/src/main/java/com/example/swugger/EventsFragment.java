@@ -82,10 +82,10 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
     /* Positive click for edit event dialog. */
     @Override
-    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged, boolean remindersChanged,
+    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged,
                                     String newName, String newNotes,
                                     int newMonth, int newDay, int newYear, int newHour, int newMinute,
-                                    ArrayList<Reminder> newRemindersList, ArrayList<ReminderWithId> remindersToDeleteList) {
+                                    ArrayList<Reminder> displayedReminderList, ArrayList<ReminderWithId> remindersToDeleteList) {
         // TODO: get the new event info from the dialog instance and update the event and refresh recyclerview
         SQLiteDatabase db = eventDbHelper.getReadableDatabase();
         if (hasEdits) {
@@ -133,44 +133,41 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
 
             // TODO: if time and/or date has changed and updating is successful AND there are existing reminders,
             // TODO: grab the PendingIntents from SharedPrefs using gson and edit them
-            if (remindersChanged) {
-                // TODO: remove reminders
-                for (ReminderWithId existingReminder : remindersToDeleteList) {
-                    int rowsDeleted = deleteAndCancelReminder(existingReminder);
-                    if (rowsDeleted != 1) {
-                        throw new SecurityException("we somehow deleted not 1 reminder, but.. " + rowsDeleted + " to be exact. \n"
-                                + "reminder info: " + existingReminder.toString() + "\n"
-                                + "event info: " + origEvent.toString());
-                    }
-                }
 
-                // add the reminders (this is PURELY to save to the backend, as reminders are no longer in view of the user)
-                for (Reminder newReminder : newRemindersList) {
-                    // If the original event cannot add any more reminders, we're finished
-                    if (!origEvent.canAddReminder()) { break; }
-
-                    // If the original event already has reminders set at this new reminder's time, continue to the next newReminder
-                    if (!origEvent.isDuplicateReminder(newReminder)) {
-                        // If there isn't already a reminder with the new reminder's time, add it to the event and database
-                        String[] colNames = {
-                                ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID,
-                                ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS,
-                                ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE,
-                                ReminderContract.ReminderEntry.COL_REMINDER_HOURS_BEFORE,
-                                ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE
-                        };
-                        String[] values = {
-                                Long.toString(newReminder.getEventId()),
-                                Long.toString(newReminder.getTimeInMilliseconds()),
-                                Integer.toString(newReminder.getDaysBefore()),
-                                Integer.toString(newReminder.getHoursBefore()),
-                                Integer.toString(newReminder.getMinutesBefore())
-                        };
-                        long newRowId = addToDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, colNames, values);
-                    }
+            // TODO: remove reminders
+            for (ReminderWithId existingReminder : remindersToDeleteList) {
+                int rowsDeleted = deleteAndCancelReminder(existingReminder);
+                if (rowsDeleted != 1) {
+                    throw new SecurityException("we somehow deleted not 1 reminder, but.. " + rowsDeleted + " to be exact. \n"
+                            + "reminder info: " + existingReminder.toString() + "\n"
+                            + "event info: " + origEvent.toString());
                 }
-                refreshReminders(origEvent);        // TODO: this could be more efficient by updating locally rather than retrieving all reminders again
             }
+
+            // add the reminders (this is PURELY to save to the backend, as reminders are no longer in view of the user)
+            for (Reminder reminder : displayedReminderList) {
+                // If the reminder has not already been saved and
+                // if the original event already has reminders set at this new reminder's time, continue to the next newReminder
+                if (!reminder.isSavedReminder() && !origEvent.isDuplicateReminder(reminder)) {
+                    // If there isn't already a reminder with the new reminder's time, add it to the event and database
+                    String[] colNames = {
+                            ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID,
+                            ReminderContract.ReminderEntry.COL_REMINDER_MILLISECONDS,
+                            ReminderContract.ReminderEntry.COL_REMINDER_DAYS_BEFORE,
+                            ReminderContract.ReminderEntry.COL_REMINDER_HOURS_BEFORE,
+                            ReminderContract.ReminderEntry.COL_REMINDER_MINUTES_BEFORE
+                    };
+                    String[] values = {
+                            Long.toString(reminder.getEventId()),
+                            Long.toString(reminder.getTimeInMilliseconds()),
+                            Integer.toString(reminder.getDaysBefore()),
+                            Integer.toString(reminder.getHoursBefore()),
+                            Integer.toString(reminder.getMinutesBefore())
+                    };
+                    long newRowId = addToDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, colNames, values);
+                }
+            }
+            refreshReminders(origEvent);        // TODO: this could be more efficient by updating locally rather than retrieving all reminders again
 
             // the old event should disappear (if appropriate) and RecyclerView should be re-sorted and updated
             refreshEventRecyclerView(currentMonth, currentDay, currentYear);
@@ -326,6 +323,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             cursor.close();
         }
     }
+    /** Refresh the remindersList of the given event. */
     private void refreshReminders(Event event) {
         event.clearReminders();
 
@@ -412,10 +410,15 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
     /** Used for Debugging, print all rows of the given database. */
     // TODO: make it a static method of an appropriate class
-    public void printDatabase() {
+    public void printDatabase(String tableName) {
+        // TODO: inefficient check of table name
         SQLiteDatabase db = eventDbHelper.getReadableDatabase();
-        String tableString = String.format("Table %s:\n", EventContract.EventEntry.TABLE_NAME);
-        Cursor allRows  = db.rawQuery("SELECT * FROM " + EventContract.EventEntry.TABLE_NAME, null);
+        if (tableName.equals(ReminderContract.ReminderEntry.TABLE_NAME)) {
+            db = reminderDbHelper.getReadableDatabase();
+        }
+
+        String tableString = String.format("Table %s:\n", tableName);
+        Cursor allRows  = db.rawQuery("SELECT * FROM " + tableName, null);
         if (allRows.moveToFirst() ){
             String[] columnNames = allRows.getColumnNames();
             do {

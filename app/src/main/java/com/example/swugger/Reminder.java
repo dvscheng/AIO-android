@@ -50,6 +50,8 @@ public class Reminder {
         return minutesBefore;
     }
 
+    public boolean isSavedReminder() { return false; }
+
     @Override
     public String toString() {
         String day = "";

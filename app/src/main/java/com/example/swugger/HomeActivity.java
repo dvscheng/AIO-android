@@ -11,6 +11,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.swugger.db.EventContract;
+import com.example.swugger.db.ReminderContract;
+
 import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
@@ -93,8 +96,12 @@ public class HomeActivity extends AppCompatActivity {
                 mPagerAdapter.getTaskFrag().printDatabase();
                 return true;
             case R.id.debug_toolbar_event_list:
-                mPagerAdapter.getEventFrag().printDatabase();
+                mPagerAdapter.getEventFrag().printDatabase(EventContract.EventEntry.TABLE_NAME);
                 return true;
+            case R.id.debug_toolbar_reminder_list:
+                mPagerAdapter.getEventFrag().printDatabase(ReminderContract.ReminderEntry.TABLE_NAME);
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
