@@ -1,6 +1,10 @@
 package com.example.swugger;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 
 public class EventsFragment extends Fragment implements AddEventDialogFragment.AddEventDialogListener, EditEventDialogFragment.EditEventsDialogListener {
 
+    private Context mContext;
     private CalendarView mCalendarView;
     private FloatingActionButton mFab;
     private EventsFragment mTargetFragment;
@@ -188,11 +193,12 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.fragment_events, container, false);
 
+        mContext = getContext();
         mCalendarView = (CalendarView) rootView.findViewById(R.id.calendarView_events_fragment);
         mTargetFragment = this;
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_events_fragment);
-        eventDbHelper = new EventDbHelper(getContext());
-        reminderDbHelper = new ReminderDbHelper(getContext());
+        eventDbHelper = new EventDbHelper(mContext);
+        reminderDbHelper = new ReminderDbHelper(mContext);
         mEventList = new ArrayList<>();
 
         // convert from epoch to readable time
@@ -204,7 +210,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         currentYear = Integer.parseInt(date.substring(6, 10));
 
         // Specify and set an adapter
-        mRecyclerViewAdapter = new EventsRecyclerViewAdapter(getContext(), mEventList, this, getFragmentManager()); // was rootView
+        mRecyclerViewAdapter = new EventsRecyclerViewAdapter(mContext, mEventList, this, getFragmentManager()); // was rootView
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         // Set LayoutManager
@@ -434,7 +440,15 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         System.out.println(tableString);
     }
 
-    private void setAlarm() {
+    private void setAlarm(Reminder reminder) {
+        Intent myIntent = new Intent(mContext, HomeActivity.class);
+        PendingIntent myPendingIntent = PendingIntent.getBroadcast(mContext, HomeActivity.PENDING_INTENT_REQUEST_CODE,
+                                                                    myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC, reminder.getTimeInMilliseconds(), myPendingIntent);
+    }
+
+    private void cancelAlarm() {
 
     }
 }
