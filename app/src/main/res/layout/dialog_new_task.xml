@@ -28,7 +28,8 @@
             android:id="@+id/editText_name_new_task_dialog"
             android:hint="@string/dialog_new_task_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone" />
 
         <EditText
             android:id="@+id/editText_notes_new_task_dialog"

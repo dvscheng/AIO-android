@@ -19,6 +19,7 @@ public class NotificationPublisher extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        System.out.println("MADE IT TO NOTIFICATIONPUBLISHER");
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         Notification notification = intent.getParcelableExtra(EVENT_NOTIFICATION);
         int id = intent.getIntExtra(EVENT_NOTIFICATION_ID, 0);

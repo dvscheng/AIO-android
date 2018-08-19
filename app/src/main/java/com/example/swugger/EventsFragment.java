@@ -458,6 +458,8 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                 .setContentTitle(event.getName())
                 .setContentText("Your event is up in " + reminder.toString())      // TODO: consider reformatting string to be more readable
                 .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(event.getNotes()))
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);

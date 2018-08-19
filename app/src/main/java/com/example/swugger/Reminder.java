@@ -77,7 +77,10 @@ public class Reminder {
                 minute += "s";
             }
         }
-
-        return day + hour + minute;
+        if (daysBefore == 0 && hoursBefore == 0 && minutesBefore == 0) {
+            return "On time";
+        } else {
+            return day + hour + minute;
+        }
     }
 }

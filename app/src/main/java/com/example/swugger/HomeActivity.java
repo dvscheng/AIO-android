@@ -108,6 +108,9 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.debug_toolbar_event_list:
                 mPagerAdapter.getEventFrag().printDatabase(EventContract.EventEntry.TABLE_NAME);
                 return true;
+            case R.id.debug_toolbar_reminder_list:
+                mPagerAdapter.getEventFrag().printDatabase(ReminderContract.ReminderEntry.TABLE_NAME);
+                return true;
             case R.id.debug_show_notification:
                 showNotification();
                 return true;
@@ -132,7 +135,7 @@ public class HomeActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.notification_channel_name);
             String description = getString(R.string.notification_channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;       // allows heads-up notification to display
 
             NotificationChannel channel = new NotificationChannel(NotificationPublisher.EVENT_CHANNEL_ID, name, importance);
             channel.setDescription(description);
@@ -148,18 +151,34 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, HomeActivity.class);
         // intent.setFlags()  TODO: do this later
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_today_black_24dp)
-                .setContentTitle("Test notification!")
-                .setContentText("This is a nice old test that tests long sentences to see if the test that tests long sentences to see")      // TODO: consider reformatting string to be more readable
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .setCategory(NotificationCompat.CATEGORY_EVENT)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
         int debugNotificationId = 9999;
-        Notification notification = builder.build();
+
+        // Only user Notification.Builder(Context, channelId) when API 26+
+        Notification notification;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder builder = new Notification.Builder(this, NotificationPublisher.EVENT_CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_today_black_24dp)
+                    .setContentTitle("Test notification!")
+                    .setContentText("This is a nice old test that tests long sentences to see if the test that tests long sentences to see")      // TODO: consider reformatting string to be more readable
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .setCategory(NotificationCompat.CATEGORY_EVENT);
+                    // priority is now set in channel creation
+
+            notification = builder.build();
+        } else {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.ic_today_black_24dp)
+                    .setContentTitle("Test notification!")
+                    .setContentText("This is a nice old test that tests long sentences to see if the test that tests long sentences to see")      // TODO: consider reformatting string to be more readable
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .setCategory(NotificationCompat.CATEGORY_EVENT)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH);         // high priority allows heads-up notification to display
+
+            notification = builder.build();
+        }
+
         NotificationManagerCompat.from(this).notify(debugNotificationId, notification);
     }
 }
