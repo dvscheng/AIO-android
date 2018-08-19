@@ -1,6 +1,7 @@
 package com.example.swugger;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -101,8 +103,8 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
              *  HANDLING EVENT DETAILS
              */
             // find the ONE event with the corresponding id
-            String whereClause = EventContract.EventEntry._ID + " =?";
-            String whereArgs[] = { Long.toString(origEvent.getId()) };
+            String whereClauseEvent = EventContract.EventEntry._ID + " =?";
+            String WhereArgsEvent[] = { Long.toString(origEvent.getId()) };
             /*String whereClause = EventContract.EventEntry.COL_EVENT_NAME + " =? AND " +
                     EventContract.EventEntry.COL_EVENT_NOTES + " =? AND " +
                     EventContract.EventEntry.COL_EVENT_MONTH + " =? AND " +
@@ -140,22 +142,25 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
              *  ADDING TO DATABASE
              */
             // update the SINGLE row (should not have multiple or no events with these params) and check that only 1 row was updated
-            int rowsUpdated = db.update(EventContract.EventEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
-            if (rowsUpdated != 1) {
-                throw new SecurityException("we somehow updated not 1 event, but.. " + rowsUpdated + " to be exact. \n" + origEvent.toString());
+            int rowsUpdatedEvent = db.update(EventContract.EventEntry.TABLE_NAME, contentValues, whereClauseEvent, WhereArgsEvent);
+            if (rowsUpdatedEvent != 1) {
+                throw new SecurityException("we somehow updated not 1 event, but.. " + rowsUpdatedEvent + " to be exact. \n" + origEvent.toString());
             }
 
             /*
              *  HANDLING REMINDERS
              */
             for (ReminderWithId savedReminder : remindersToDeleteList) {
-                int rowsDeleted = deleteAndCancelReminder(savedReminder);
-                if (rowsDeleted != 1) {
-                    throw new SecurityException("we somehow deleted not 1 reminder, but.. " + rowsDeleted + " to be exact. \n"
+                String whereClauseReminder = ReminderContract.ReminderEntry._ID + " =?";
+                String[] whereArgsReminder = { Long.toString(savedReminder.getId()) };
+                int rowsDeletedReminder = deleteFromDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, whereClauseReminder, whereArgsReminder);
+                if (rowsDeletedReminder != 1) {
+                    throw new SecurityException("we somehow deleted not 1 reminder, but.. " + rowsDeletedReminder + " to be exact. \n"
                             + "reminder info: " + savedReminder.toString() + "\n"
                             + "event info: " + origEvent.toString());
                 }
-                setOrCancelAlarm(savedReminder, false);
+
+                setOrCancelAlarm(origEvent, savedReminder, false);
             }
 
             // add the reminders (this is PURELY to save to the backend, as reminders are no longer in view of the user)
@@ -178,12 +183,12 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                             Integer.toString(reminder.getHoursBefore()),
                             Integer.toString(reminder.getMinutesBefore())
                     };
-                    long newRowId = addToDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, colNames, values);
+                    long newRowIdReminder = addToDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, colNames, values);
 
                     // Create a ReminderWithId object with the newly saved reminder in order to set an alarm.
-                    ReminderWithId savedReminder = new ReminderWithId(newRowId, reminder.getEventId(), reminder.getTimeInMilliseconds(),
+                    ReminderWithId savedReminder = new ReminderWithId(newRowIdReminder, reminder.getEventId(), reminder.getTimeInMilliseconds(),
                                                                         reminder.getDaysBefore(), reminder.getHoursBefore(), reminder.getMinutesBefore());
-                    setOrCancelAlarm(savedReminder, true);
+                    setOrCancelAlarm(origEvent, savedReminder, true);
                 }
             }
             refreshReminders(origEvent);        // TODO: this could be more efficient by updating locally rather than retrieving all reminders again
@@ -417,17 +422,6 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         int rowsDeleted = db.delete(tableName, whereClause, whereArgs);
         return rowsDeleted;
     }
-    /** Removes the reminder from the database and cancels its associated alarm. Returns the number of rows deleted from the database. */
-    private int deleteAndCancelReminder(ReminderWithId savedReminder) {
-        String whereClauseReminder = ReminderContract.ReminderEntry._ID + " =?";
-        String[] whereArgsReminder = { Long.toString(savedReminder.getId()) };
-
-        int rowsDeleted = deleteFromDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, whereClauseReminder, whereArgsReminder);
-
-        // TODO: cancel the alarm
-
-        return rowsDeleted;
-    }
     /** Used for Debugging, print all rows of the given database. */
     // TODO: make it a static method of an appropriate class
     public void printDatabase(String tableName) {
@@ -453,26 +447,46 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         allRows.close();
         System.out.println(tableString);
     }
-
-    /** Always use this to get a PendingIntent that corresponds with a reminder in order to make consistent the creation of PendingIntents for alarm cancellation. */
-    private PendingIntent getPendingIntent(ReminderWithId reminder) {
+    /** Create a Notification object, which contains content given by the given event and reminder. */
+    private Notification createNotification(Event event, ReminderWithId reminder) {
         Intent intent = new Intent(mContext, HomeActivity.class);
+        // intent.setFlags()  TODO: do this later
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
+                .setSmallIcon(R.drawable.ic_today_black_24dp)
+                .setContentTitle(event.getName())
+                .setContentText("Your event is up in " + reminder.toString())      // TODO: consider reformatting string to be more readable
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setCategory(NotificationCompat.CATEGORY_EVENT)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        return builder.build();
+    }
+    /** Always use this to get a PendingIntent that corresponds with a reminder in order to make consistent the creation of PendingIntents for alarm cancellation.
+     * Should ALWAYS return the same PendingIntent when given event and reminder. */
+    private PendingIntent getPendingIntent(Event event, ReminderWithId reminder) {
+        Intent intent = new Intent(mContext, NotificationPublisher.class);
+        intent.putExtra(NotificationPublisher.EVENT_NOTIFICATION_ID, (int) reminder.getId());
+        intent.putExtra(NotificationPublisher.EVENT_NOTIFICATION, createNotification(event, reminder));
+
         return PendingIntent.getBroadcast(mContext, (int) reminder.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);     // reminder.getId() will (probably) never pass 2.1b because you'd need 2.1b reminders
     }
     /** Sets or cancels the alarm for the given reminder. */
-    private void setOrCancelAlarm(ReminderWithId reminder, boolean set) {
+    private void setOrCancelAlarm(Event event, ReminderWithId reminder, boolean set) {
         // make sure the reminder is not before the current date
         long currentTimeInMilliseconds = Calendar.getInstance(TimeZone.getDefault(), Locale.getDefault()).getTimeInMillis();
         if (reminder.getTimeInMilliseconds() <= currentTimeInMilliseconds) {
             return;
         }
 
-        PendingIntent pendingIntent = getPendingIntent(reminder);
+        PendingIntent pendingIntent = getPendingIntent(event, reminder);        // This PendingIntent should always be the same given the same event and reminder
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
 
         // TODO: handle NPE
         if (set) {
-            alarmManager.set(AlarmManager.RTC, reminder.getTimeInMilliseconds(), pendingIntent);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, reminder.getTimeInMilliseconds(), pendingIntent);
         } else {
             alarmManager.cancel(pendingIntent);
         }

@@ -31,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get the email and pass..
+        mEmailText = (EditText) findViewById(R.id.email_text_field);
+        mPassText = (EditText) findViewById(R.id.password_text_field);
+
         // 1.
         mToolbar = (Toolbar) findViewById(R.id.login_toolbar);
         setSupportActionBar(mToolbar);
@@ -42,10 +46,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Create the intent.
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-
-                // Get the email and pass..
-                mEmailText = (EditText) findViewById(R.id.email_text_field);
-                mPassText = (EditText) findViewById(R.id.password_text_field);
 
                 // make them into Strings..
                 String inputEmail = mEmailText.getText().toString();

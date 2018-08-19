@@ -18,4 +18,9 @@
         android:title="@string/reminder_list_toolbar"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/debug_show_notification"
+        android:title="@string/notification_toolbar"
+        app:showAsAction="never"/>
+
 </menu>

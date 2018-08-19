@@ -314,28 +314,12 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         return true;
     }
     /** Checks whether the user has edited any reminders. */
-    // TODO change this later
+    // TODO implement better handling of this reminders-changed later
     private boolean remindersChanged() {
         return remindersEdited;
     }
     /** Returns whether more reminders can be set for the associated event. */
     public boolean canAddReminder() {
         return displayedRemindersList.size() < Event.MAX_NUM_OF_REMINDERS;
-    }
-
-    private void cancelAlarm(ReminderWithId reminder) {
-        // TODO: take id to remove w/ AlarmManager(?)
-    }
-
-    private void deleteReminder(Reminder reminder) {
-        // TODO: notify remindersadapter
-        displayedRemindersList.remove(reminder);
-        mRemindersAdapter.notifyDataSetChanged();
-    }
-
-    private ArrayList<PendingIntent> createAndStoreAlarmPendingIntents(Event event) {
-        ArrayList<PendingIntent> pendingIntents = new ArrayList<>();
-
-        return pendingIntents;
     }
 }

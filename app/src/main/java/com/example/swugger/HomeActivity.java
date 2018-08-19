@@ -1,8 +1,15 @@
 package com.example.swugger;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -77,6 +84,9 @@ public class HomeActivity extends AppCompatActivity {
         mPager.setAdapter(mPagerAdapter);
         mPager.setOffscreenPageLimit(NUM_OF_FRAGMENTS_OFF_SCREEN);
         mPager.setCurrentItem(1);
+
+        // Create a notification channel
+        createNotificationChannel();
     }
 
 
@@ -98,8 +108,8 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.debug_toolbar_event_list:
                 mPagerAdapter.getEventFrag().printDatabase(EventContract.EventEntry.TABLE_NAME);
                 return true;
-            case R.id.debug_toolbar_reminder_list:
-                mPagerAdapter.getEventFrag().printDatabase(ReminderContract.ReminderEntry.TABLE_NAME);
+            case R.id.debug_show_notification:
+                showNotification();
                 return true;
 
             default:
@@ -113,5 +123,43 @@ public class HomeActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         // Show a DialogFragment
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        // TODO: more than one channel for other notifications
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.notification_channel_name);
+            String description = getString(R.string.notification_channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            NotificationChannel channel = new NotificationChannel(NotificationPublisher.EVENT_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void showNotification() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        // intent.setFlags()  TODO: do this later
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_today_black_24dp)
+                .setContentTitle("Test notification!")
+                .setContentText("This is a nice old test that tests long sentences to see if the test that tests long sentences to see")      // TODO: consider reformatting string to be more readable
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setCategory(NotificationCompat.CATEGORY_EVENT)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        int debugNotificationId = 9999;
+        Notification notification = builder.build();
+        NotificationManagerCompat.from(this).notify(debugNotificationId, notification);
     }
 }
