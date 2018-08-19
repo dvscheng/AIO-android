@@ -18,7 +18,6 @@ import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
 
-    public final static int PENDING_INTENT_REQUEST_CODE = 1;
     /** A set containing all of the user's accounts. */
     private HashMap<String, String> userAccounts = new HashMap<>();
     /** The custom toolbar that I made, has teal-ish color.

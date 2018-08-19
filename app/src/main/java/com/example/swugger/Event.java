@@ -117,10 +117,10 @@ public class Event implements Serializable {
 
     /** Checks whether or not this event already has a reminder set at the given new reminder's time. */
     public boolean isDuplicateReminder(Reminder reminder) {
-        for (Reminder existingReminder : remindersList) {
-            if (existingReminder.getDaysBefore() == reminder.getDaysBefore()
-                    && existingReminder.getHoursBefore() == reminder.getHoursBefore()
-                    && existingReminder.getMinutesBefore() == reminder.getMinutesBefore()) {
+        for (Reminder savedReminder : remindersList) {
+            if (savedReminder.getDaysBefore() == reminder.getDaysBefore()
+                    && savedReminder.getHoursBefore() == reminder.getHoursBefore()
+                    && savedReminder.getMinutesBefore() == reminder.getMinutesBefore()) {
                 return true;
             }
         }

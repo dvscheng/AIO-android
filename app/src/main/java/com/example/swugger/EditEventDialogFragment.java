@@ -109,8 +109,8 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         // TODO: more efficient way of comparing reminder dates instead of having to instantiate a Reminder object and string comparing
         Reminder newReminder = new Reminder(mEvent.getId(), reminderDateInMilliseconds, daysBefore, hoursBefore, minutesBefore);
         // Stop if the event already has this reminder
-        for (Reminder existingReminder : displayedRemindersList) {
-            if (existingReminder.toString().equals(newReminder.toString())) {
+        for (Reminder reminder : displayedRemindersList) {
+            if (reminder.toString().equals(newReminder.toString())) {
                 Toast.makeText(mContext, "A reminder with such a date has already been set!", Toast.LENGTH_SHORT).show();
                 return;
             }
