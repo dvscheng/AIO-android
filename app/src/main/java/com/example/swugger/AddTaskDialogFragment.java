@@ -7,9 +7,16 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
 
 public class AddTaskDialogFragment extends DialogFragment {
+
+
+    private AddTasksDialogListener mCallback;
+    private EditText mTaskName;
+    private EditText mTaskNotes;
+    private Toolbar mToolbar;
 
     /** Implements the AddTasksDialogListener so that any Activity
      *  that implements it can retrieve information from this Dialog. */
@@ -26,18 +33,20 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        View root = inflater.inflate(R.layout.dialog_new_task, null);
 
         // Sets Callback to the Activity
         mCallback = (AddTasksDialogListener) getTargetFragment();
 
-        builder.setView(inflater.inflate(R.layout.dialog_new_task, null))
+        mTaskName = (EditText) root.findViewById(R.id.editText_name_new_task_dialog);
+        mTaskNotes = (EditText) root.findViewById(R.id.editText_notes_new_task_dialog);
+
+
+        builder.setView(root)
                 .setPositiveButton(R.string.dialog_accept_task, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Fetch the EditText fields, convert the text to strings
-                        Dialog d = (Dialog) dialog;
-                        mTaskName = (EditText) d.findViewById(R.id.editText_name_new_task_dialog);
                         String taskName = mTaskName.getText().toString();
-                        mTaskNotes = (EditText) d.findViewById(R.id.editText_notes_new_task_dialog);
                         String taskNotes = mTaskNotes.getText().toString();
 
                         Task task = new Task(taskName, taskNotes);
@@ -58,12 +67,4 @@ public class AddTaskDialogFragment extends DialogFragment {
         // Create the AlertDialog object and return it
         return builder.create();
     }
-
-    private AddTasksDialogListener mCallback;
-
-    private EditText mTaskName;
-
-    private EditText mTaskNotes;
-
-    private Toolbar mToolbar;
 }
