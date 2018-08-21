@@ -19,8 +19,13 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/debug_show_notification"
-        android:title="@string/notification_toolbar"
+        android:id="@+id/debug_show_notification_now"
+        android:title="@string/notification_now_toolbar"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/debug_show_notification_delayed"
+        android:title="@string/notification_delay_toolbar"
         app:showAsAction="never"/>
 
 </menu>

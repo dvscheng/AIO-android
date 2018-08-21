@@ -1,19 +1,20 @@
 <resources>
-    <string name="app_name">Swugger</string>
+    <string name="app_name">Ayioh</string>
     <string name="notification_channel_name">AIO Notification Channel</string>
     <string name="notification_channel_description">Notification Channel for AIO</string>
 
     <string name="email_hint">Type your email here</string>
     <string name="password_hint">Type your password here</string>
     <string name="name_button">Start</string>
-    <string name="return_to_main_button">swag out</string>
+    <string name="return_to_main_button">Leave</string>
     <string name="event_list_toolbar">Debug: Events</string>
     <string name="task_list_toolbar">Debug: Tasks</string>
     <string name="reminder_list_toolbar">Debug: Reminders</string>
-    <string name="notification_toolbar">Debug: Show Notification</string>
+    <string name="notification_now_toolbar">Debug: Show Notification Now</string>
+    <string name="notification_delay_toolbar">Debug: Show Notification Delayed</string>
 
     <!-- Dialog for creating new TASKS -->
-    <string name="dialog_title">Swagaroo</string>
+    <string name="dialog_title">Ayioh</string>
     <string name="dialog_create_task_msg">New Task</string>
     <string name="dialog_accept_task">Create</string>
     <string name="dialog_cancel_task">Cancel</string>
@@ -21,7 +22,7 @@
     <string name="dialog_new_task_notes">Notes</string>
 
     <!-- Dialog for creating new EVENTS -->
-    <string name="create_event_dialog_title">Swagaroo</string>
+    <string name="create_event_dialog_title">Ayioh</string>
     <string name="create_event_dialog_msg">New Event</string>
     <string name="create_event_dialog_accept">Create</string>
     <string name="create_event_dialog_cancel">Cancel</string>

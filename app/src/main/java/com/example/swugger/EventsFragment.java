@@ -456,13 +456,13 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.ic_today_black_24dp)
                 .setContentTitle(event.getName())
-                .setContentText("Your event is up in " + reminder.toString())      // TODO: consider reformatting string to be more readable
+                .setContentText("Your event is in " + reminder.toString())      // TODO: consider reformatting string to be more readable
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(event.getNotes()))
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         return builder.build();
     }
