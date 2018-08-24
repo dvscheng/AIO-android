@@ -6,12 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_tasks_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <android.support.design.widget.FloatingActionButton
+    <!--<android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_tasks_fragment"
         app:elevation="4dp"
         app:borderWidth="0dp"
@@ -22,6 +22,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"/>-->
 
 </RelativeLayout>

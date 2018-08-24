@@ -1,13 +1,14 @@
 package com.example.swugger;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +31,14 @@ public class RemindersAdapter extends ArrayAdapter<Reminder> {
 
     public class ViewHolder {
         public final View itemView;
-        public TextView mReminderText;
-        public ImageView mDeleteReminderBtn;
+//        public Chip mChip;
 
         public ViewHolder(View itemView) {
             if (itemView == null) {
                 throw new IllegalArgumentException("itemView may not be null");
             }
             this.itemView = itemView;
-            mReminderText = (TextView) itemView.findViewById(R.id.text_reminder_edit_event_dialog);
-            mDeleteReminderBtn = (ImageView) itemView.findViewById(R.id.button_remove_reminder_edit_event_dialog);
+//            mChip = itemView.findViewById(R.id.chip_reminder_edit_event_dialog);
         }
     }
 
@@ -71,15 +70,15 @@ public class RemindersAdapter extends ArrayAdapter<Reminder> {
         ViewHolder viewHolder = new ViewHolder(reminderView);
         final Reminder reminder = remindersList.get(position);
 
-        // set the text and set an onClickListener for the delete reminder button
-        viewHolder.mReminderText.setText(reminder.toString());
-        viewHolder.mDeleteReminderBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: tell the EditEventDialogFragment that this reminder is to be deleted
-                mRemindersAdapterListener.onDeleteReminder(reminder);
-            }
-        });
+//        // set the text and set an onClickListener for the delete reminder button
+//        viewHolder.mChip.setText(reminder.toString());
+//        viewHolder.mChip.setOnCloseIconClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // TODO: tell the EditEventDialogFragment that this reminder is to be deleted
+//                mRemindersAdapterListener.onDeleteReminder(reminder);
+//            }
+//        });
 
 
 

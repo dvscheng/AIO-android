@@ -26,13 +26,13 @@
         android:textAlignment="center"
         android:text="@string/event_calendar_separator_text" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_events_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/separator_events_calendar_events_fragment" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_events_fragment"
         app:elevation="4dp"
         app:borderWidth="0dp"
