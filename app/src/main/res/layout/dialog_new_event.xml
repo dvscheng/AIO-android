@@ -51,7 +51,7 @@
                 android:id="@+id/timePicker_new_event_dialog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:timePickerMode="clock" />
+                android:timePickerMode="spinner" />
 
         </LinearLayout>
 

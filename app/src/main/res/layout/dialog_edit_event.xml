@@ -26,6 +26,16 @@
             android:background="?selectableItemBackground" />
 
         <ImageButton
+            android:id="@+id/button_delete_edit_event_dialog"
+            android:layout_width="39dp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/button_save_edit_event_dialog"
+            android:src="@drawable/ic_close_black_24dp"
+            android:tint="@color/white"
+            android:background="?selectableItemBackground" />
+
+        <ImageButton
             android:id="@+id/button_save_edit_event_dialog"
             android:layout_width="78dp"
             android:layout_height="match_parent"

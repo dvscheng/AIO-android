@@ -95,10 +95,10 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
     /* Positive click for edit event dialog. */
     @Override
-    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged,
-                                    String newName, String newNotes,
-                                    int newMonth, int newDay, int newYear, int newHour, int newMinute,
-                                    ArrayList<Reminder> displayedReminderList, ArrayList<ReminderWithId> remindersToDeleteList) {
+    public void onSaveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged,
+                                String newName, String newNotes,
+                                int newMonth, int newDay, int newYear, int newHour, int newMinute,
+                                ArrayList<Reminder> displayedReminderList, ArrayList<ReminderWithId> remindersToDeleteList) {
         // TODO: get the new event info from the dialog instance and update the event and refresh recyclerview
         SQLiteDatabase db = eventDbHelper.getReadableDatabase();
         if (hasEdits) {
@@ -126,7 +126,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             if (dateChanged) {
                 // if somehow these values are -1, do not update, something is wrong
                 if (newMonth == -1 || newDay == -1 || newYear == -1) {
-                    throw new IllegalArgumentException("attempted to update the date without valid params, check EventsFragment.onPositiveClickEdit");
+                    throw new IllegalArgumentException("attempted to update the date without valid params, check EventsFragment.onSaveClickEdit");
                 }
                 contentValues.put(EventContract.EventEntry.COL_EVENT_MONTH, Integer.toString(newMonth));
                 contentValues.put(EventContract.EventEntry.COL_EVENT_DAY, Integer.toString(newDay));
@@ -135,7 +135,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             if (timeChanged) {
                 // if somehow these values are -1, do not update, something is wrong
                 if (newHour == -1 || newMinute == -1) {
-                    throw new IllegalArgumentException("attempted to update the time without valid params (they're -1), check EventsFragment.onPositiveClickEdit");
+                    throw new IllegalArgumentException("attempted to update the time without valid params (they're -1), check EventsFragment.onSaveClickEdit");
                 }
                 contentValues.put(EventContract.EventEntry.COL_EVENT_HOUR, Integer.toString(newHour));
                 contentValues.put(EventContract.EventEntry.COL_EVENT_MINUTE, Integer.toString(newMinute));
@@ -202,11 +202,22 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
     /* Negative click for edit event dialog. */
     @Override
-    public void onNegativeClickEdit() {
+    public void onBackClickEdit() {
         // Don't do anything
     }
 
+    /** Delete the current event. */
+    @Override
+    public void onDeleteClickEdit(Event event) {
+        deleteFromDatabase(event);
+        refreshEventRecyclerView(currentMonth, currentDay, currentYear);
+    }
 
+    /** Called when a notification attached with a reminder is clicked on. */
+    public void onNotificationClick(int reminderId){
+        // delete the reminder from the db
+        deleteFromDatabase(ReminderContract.ReminderEntry.TABLE_NAME, reminderId);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -228,7 +239,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         String date = Event.convertEpochToReadableDate(mCalendarView.getDate());
         // we parseInt and then toString to get rid of leading 0's. i.e. "07" -> "7"
         currentMonth = Integer.parseInt(date.substring(0, 2)) - 1;  // months in db are saved as between [0-11] so need to decrement the month # by 1
-        currentDay =  Integer.parseInt(date.substring(3, 5));
+        currentDay = Integer.parseInt(date.substring(3, 5));
         currentYear = Integer.parseInt(date.substring(6, 10));
 
         // Specify and set an adapter
@@ -279,10 +290,6 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         });
 
         return rootView;
-    }
-
-    public void onNotificationClick(int reminderId){
-        String whereClause;
     }
 
     /** Updates the RecyclerView list (removes all elements and then re-populates) according to the selected date. */
@@ -449,6 +456,18 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         }
 
         int rowsDeleted = deleteFromDatabase(dbHelper, tableName, whereClause, whereArgs);
+        return rowsDeleted;
+    }
+    /** Deletes the event along with its reminders. Returns # of events and reminders deleted. */
+    private int[] deleteFromDatabase(Event event) {
+        String eventWhereClause = EventContract.EventEntry._ID + " =?";
+        String reminderWhereClause = ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID + " =?";
+        String whereArgs[] = { Long.toString(event.getId()) };
+
+        int[] rowsDeleted = new int[2];
+        rowsDeleted[0] = deleteFromDatabase(eventDbHelper, EventContract.EventEntry.TABLE_NAME, eventWhereClause, whereArgs);
+        rowsDeleted[1] = deleteFromDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, reminderWhereClause, whereArgs);
+
         return rowsDeleted;
     }
     /** Used for Debugging, print all rows of the given database. */
