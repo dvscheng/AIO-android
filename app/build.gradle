@@ -21,15 +21,15 @@ android {
 
 def supportLibraryVersion = '24.2.1'
 dependencies {
-    implementation 'com.android.support:support-v4:' + supportLibraryVersion
+    // implementation 'com.android.support:support-v4:' + supportLibraryVersion
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:' + supportLibraryVersion
+    /*compile 'com.android.support:appcompat-v7:' + supportLibraryVersion
     compile 'com.google.android.material:material:1.0.0-rc01'
     compile 'com.android.support:recyclerview-v7:' + supportLibraryVersion
-    compile 'com.android.support:support-annotations:' + supportLibraryVersion
+    compile 'com.android.support:support-annotations:' + supportLibraryVersion*/
 
-    //implementation 'com.google.android.material:material:1.0.0-beta01'
+    implementation 'com.google.android.material:material:1.0.0-beta01'
 
     // Added
     compile 'com.google.android.gms:play-services-auth:10.0.1'
