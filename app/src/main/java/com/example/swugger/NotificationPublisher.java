@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.core.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.example.swugger.db.DatabaseHelper;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -38,6 +40,7 @@ public class NotificationPublisher extends BroadcastReceiver {
             }
         }*/
 
+        DatabaseHelper databaseHelper;
         if (intent.hasExtra(DEBUG_NOTIFICATION) && intent.hasExtra(DEBUG_NOTIFICATION_ID)) {
             notification = intent.getParcelableExtra(DEBUG_NOTIFICATION);
             id = intent.getIntExtra(DEBUG_NOTIFICATION_ID, 0);
@@ -45,6 +48,11 @@ public class NotificationPublisher extends BroadcastReceiver {
             // DEFAULT TO EVENT NOTIFICATION
             notification = intent.getParcelableExtra(EVENT_NOTIFICATION);
             id = intent.getIntExtra(EVENT_NOTIFICATION_ID, 0);
+            databaseHelper = DatabaseHelper.getInstance(context, DatabaseHelper.EVENTS_DB_NAME, DatabaseHelper.DATABASE_VERSION);
+            String whereClause = "";
+            String[] whereArgs = { "hi" };
+            // TODO:
+            databaseHelper.deleteFromDatabase(databaseHelper, DatabaseHelper.EVENTS_DB_NAME, whereClause, whereArgs);
         }
 
         notificationManager.notify(id, notification);
