@@ -5,10 +5,24 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class TaskDbHelper extends SQLiteOpenHelper {
+
+    private static TaskDbHelper sInstance;
+
     public static final String DB_NAME = "com.example.swugger.db";
     public static final int DB_VERSION = 1;
 
-    public TaskDbHelper(Context context) {
+    public static synchronized TaskDbHelper getInstance(Context context) {
+
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new TaskDbHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    private TaskDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 

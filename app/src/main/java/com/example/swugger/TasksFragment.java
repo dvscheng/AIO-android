@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +84,7 @@ public class TasksFragment extends Fragment implements AddTaskDialogFragment.Add
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_tasks_fragment);
 
         // Initialize the mDbHelper and mTaskList
-        mDbHelper = new TaskDbHelper(getContext());
+        mDbHelper = TaskDbHelper.getInstance(getContext());
         mTaskList = new ArrayList<>();
 
         // Read information from SQLDatabase
@@ -161,6 +163,6 @@ public class TasksFragment extends Fragment implements AddTaskDialogFragment.Add
             } while (allRows.moveToNext());
         }
         allRows.close();
-        System.out.println(tableString);
+        Log.i("print", tableString);
     }
 }

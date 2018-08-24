@@ -11,12 +11,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -216,8 +219,8 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         mCalendarView = (CalendarView) rootView.findViewById(R.id.calendarView_events_fragment);
         mTargetFragment = this;
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_events_fragment);
-        eventDbHelper = new EventDbHelper(mContext);
-        reminderDbHelper = new ReminderDbHelper(mContext);
+        eventDbHelper = EventDbHelper.getInstance(mContext);
+        reminderDbHelper = ReminderDbHelper.getInstance(mContext);
         mEventList = new ArrayList<>();
 
         // convert from epoch to readable time
@@ -276,6 +279,10 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         });
 
         return rootView;
+    }
+
+    public void onNotificationClick(int reminderId){
+        String whereClause;
     }
 
     /** Updates the RecyclerView list (removes all elements and then re-populates) according to the selected date. */
@@ -422,6 +429,28 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         int rowsDeleted = db.delete(tableName, whereClause, whereArgs);
         return rowsDeleted;
     }
+    private int deleteFromDatabase(String tableName, long id) {
+        SQLiteOpenHelper dbHelper;
+        String whereClause;
+        String[] whereArgs = new String[]{ Long.toString(id) };
+        switch (tableName) {
+            case EventContract.EventEntry.TABLE_NAME:
+                dbHelper = eventDbHelper;
+                whereClause = EventContract.EventEntry._ID + " =?";
+                break;
+
+            case ReminderContract.ReminderEntry.TABLE_NAME:
+                dbHelper = reminderDbHelper;
+                whereClause = ReminderContract.ReminderEntry._ID + " =?";
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid table name, check EventsFragment.deleteFromDatabase");
+        }
+
+        int rowsDeleted = deleteFromDatabase(dbHelper, tableName, whereClause, whereArgs);
+        return rowsDeleted;
+    }
     /** Used for Debugging, print all rows of the given database. */
     // TODO: make it a static method of an appropriate class
     public void printDatabase(String tableName) {
@@ -445,11 +474,12 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             } while (allRows.moveToNext());
         }
         allRows.close();
-        System.out.println(tableString);
+        Log.i("print", tableString);
     }
     /** Create a Notification object, which contains content given by the given event and reminder. */
     private Notification createNotification(Event event, ReminderWithId reminder) {
         Intent intent = new Intent(mContext, HomeActivity.class);
+        intent.putExtra(NotificationPublisher.REMINDER_NOTIFICATION_ID, (int) reminder.getId());
         // intent.setFlags()  TODO: do this later
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
 

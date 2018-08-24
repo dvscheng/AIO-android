@@ -46,6 +46,16 @@ public class HomeActivity extends AppCompatActivity {
     /** The pager adapter, which provides the pages to the view pager widget. */
     private ScreenSlidePagerAdapter mPagerAdapter;      // was PagerAdapter
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.hasExtra(NotificationPublisher.REMINDER_NOTIFICATION_ID)) {
+            int reminderId = intent.getIntExtra(NotificationPublisher.REMINDER_NOTIFICATION_ID, -1);
+            mPagerAdapter.getEventFrag().onNotificationClick(reminderId);
+        }
+    }
+
     /** 1. Set the toolbar.
      *  5. Create a PagerTabStrip (the white indicator of which tab you're on),
      *      set the color to white (I think), and set the Strings' color to white.

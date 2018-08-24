@@ -124,7 +124,7 @@ public class TasksRecyclerViewAdapter extends RecyclerView.Adapter<TasksRecycler
 
                 // TODO: create the task by task id
                 // remove the task from the db
-                TaskDbHelper dbHelper = new TaskDbHelper(mContext);
+                TaskDbHelper dbHelper = TaskDbHelper.getInstance(mContext);
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
                 db.delete(TaskContract.TaskEntry.TABLE_NAME,
                         TaskContract.TaskEntry.COL_TASK_NAME + "= '" + task.getName()
