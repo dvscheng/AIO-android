@@ -453,7 +453,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         // intent.setFlags()  TODO: do this later
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, NotificationPublisher.EVENT_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_today_black_24dp)
                 .setContentTitle(event.getName())
                 .setContentText("Your event is in " + reminder.toString())      // TODO: consider reformatting string to be more readable

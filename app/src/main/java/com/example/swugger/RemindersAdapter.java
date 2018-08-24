@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.google.android.material.chip.Chip;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,14 +33,14 @@ public class RemindersAdapter extends ArrayAdapter<Reminder> {
 
     public class ViewHolder {
         public final View itemView;
-//        public Chip mChip;
+        public Chip mChip;
 
         public ViewHolder(View itemView) {
             if (itemView == null) {
                 throw new IllegalArgumentException("itemView may not be null");
             }
             this.itemView = itemView;
-//            mChip = itemView.findViewById(R.id.chip_reminder_edit_event_dialog);
+            mChip = itemView.findViewById(R.id.chip_reminder_edit_event_dialog);
         }
     }
 
@@ -70,18 +72,15 @@ public class RemindersAdapter extends ArrayAdapter<Reminder> {
         ViewHolder viewHolder = new ViewHolder(reminderView);
         final Reminder reminder = remindersList.get(position);
 
-//        // set the text and set an onClickListener for the delete reminder button
-//        viewHolder.mChip.setText(reminder.toString());
-//        viewHolder.mChip.setOnCloseIconClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // TODO: tell the EditEventDialogFragment that this reminder is to be deleted
-//                mRemindersAdapterListener.onDeleteReminder(reminder);
-//            }
-//        });
-
-
-
+        // set the text and set an onClickListener for the delete reminder button
+        viewHolder.mChip.setText(reminder.toString());
+        viewHolder.mChip.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: tell the EditEventDialogFragment that this reminder is to be deleted
+                mRemindersAdapterListener.onDeleteReminder(reminder);
+            }
+        });
 
         return reminderView;
     }
