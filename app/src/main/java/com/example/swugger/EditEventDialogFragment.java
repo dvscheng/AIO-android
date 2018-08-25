@@ -222,7 +222,8 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
                                 // DO NOTHING
                             }
                         })
-                        .create();
+                        .create()
+                        .show();
             }
         });
         mSaveButton = (ImageButton) root.findViewById(R.id.button_save_edit_event_dialog);
