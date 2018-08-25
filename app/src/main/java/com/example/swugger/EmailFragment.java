@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,22 +21,41 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.Label;
 import com.google.api.services.gmail.model.ListLabelsResponse;
+import com.google.api.services.gmail.model.ListMessagesResponse;
+import com.google.api.services.gmail.model.Message;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
+
+import javax.mail.Session;
+import javax.mail.Store;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -106,7 +126,116 @@ public class EmailFragment extends Fragment {
 
         getResultsFromApi();
 
+        try {
+            Gmail service = buildAuthorizedApiClientService();
+            ListMessagesResponse response = service.users().messages().list("me").setQ("").execute();
+
+            List<Message> messages = new ArrayList<>();
+            while (response.getMessages() != null) {
+                messages.addAll(response.getMessages());
+                if (response.getNextPageToken() != null) {
+                    String pageToken = response.getNextPageToken();
+                    response = service.users().messages().list("me").setQ("")
+                            .setPageToken(pageToken).execute();
+                } else {
+                    break;
+                }
+            }
+
+            for (Message message : messages) {
+                Log.i("gmail_api",message.toPrettyString());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+
+
         return rootView;
+    }
+
+    /**
+     * List all Messages of the user's mailbox matching the query.
+     *
+     * @param service Authorized Gmail API instance.
+     * @param userId User's email address. The special value "me"
+     * can be used to indicate the authenticated user.
+     * @param query String used to filter the Messages listed.
+     * @throws IOException
+     */
+    public static List<Message> listMessagesMatchingQuery(Gmail service, String userId,
+                                                          String query) throws IOException {
+        ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
+
+        List<Message> messages = new ArrayList<Message>();
+        while (response.getMessages() != null) {
+            messages.addAll(response.getMessages());
+            if (response.getNextPageToken() != null) {
+                String pageToken = response.getNextPageToken();
+                response = service.users().messages().list(userId).setQ(query)
+                        .setPageToken(pageToken).execute();
+            } else {
+                break;
+            }
+        }
+
+        for (Message message : messages) {
+            System.out.println(message.toPrettyString());
+        }
+
+        return messages;
+    }
+
+
+    private static final String APPLICATION_NAME = "Gmail API Java Quickstart";
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+
+    /**
+     * Global instance of the scopes required by this quickstart.
+     * If modifying these scopes, delete your previously saved tokens/ folder.
+     */
+    private static final List<String> G_SCOPES = Collections.singletonList(GmailScopes.GMAIL_LABELS);
+//    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    private static final String CREDENTIALS_FILE_PATH = "../res/credentials.json";
+
+    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+        // Load client secrets.
+        InputStream in = EmailFragment.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+
+        // Build flow and trigger user authorization request.
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, G_SCOPES)
+                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+                .setAccessType("offline")
+                .build();
+        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+    }
+
+    private Gmail buildAuthorizedApiClientService() throws IOException, GeneralSecurityException {
+        // Build a new authorized API client service.
+//        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
+        Gmail service = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
+        /*// Print the labels in the user's account.
+        String user = "me";
+        ListLabelsResponse listResponse = service.users().labels().list(user).execute();
+        List<Label> labels = listResponse.getLabels();
+        if (labels.isEmpty()) {
+            System.out.println("No labels found.");
+        } else {
+            System.out.println("Labels:");
+            for (Label label : labels) {
+                System.out.printf("- %s\n", label.getName());
+            }
+        }*/
+        return service;
     }
 
     /**
