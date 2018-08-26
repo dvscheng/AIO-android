@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -12,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.renderscript.ScriptGroup;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -165,7 +168,7 @@ public class EmailFragment extends Fragment {
      * @param query String used to filter the Messages listed.
      * @throws IOException
      */
-    public static List<Message> listMessagesMatchingQuery(Gmail service, String userId,
+    public List<Message> listMessagesMatchingQuery(Gmail service, String userId,
                                                           String query) throws IOException {
         ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
 
@@ -199,12 +202,14 @@ public class EmailFragment extends Fragment {
      */
     private static final List<String> G_SCOPES = Collections.singletonList(GmailScopes.GMAIL_LABELS);
 //    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-    private static final String CREDENTIALS_FILE_PATH = "../res/credentials.json";
+    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    private  Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
-        InputStream in = EmailFragment.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+        InputStream is = this.getContext().getAssets().open("credentials.json");
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(is));
+//        InputStream in = EmailFragment.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+//        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
