@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
     /** The number of pages defaulted to 3 (email, calender, tasks). */
     private static final int NUM_PAGES = 3;
+    private EmailFragment mEmailFragment;
     private EventsFragment mEventFrag;
     private TasksFragment mTaskFrag;
 
@@ -21,7 +22,8 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new EmailFragment();
+            mEmailFragment = new EmailFragment();
+            return mEmailFragment;
         } else if (position == 1) {
             // TODO: is this the best way to get a reference to the event fragment?
             mEventFrag = new EventsFragment();
@@ -53,6 +55,7 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return NUM_PAGES;
     }
+    public EmailFragment getEmailFrag() { return mEmailFragment; }
     public EventsFragment getEventFrag() { return mEventFrag; }
     public TasksFragment getTaskFrag() { return mTaskFrag; }
 }
