@@ -27,6 +27,8 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<EmailRecycler
         }
     }
 
+    public static final String MESSAGE_STRING_CONTENT = "MESSAGE_STRING_CONTENT";
+
     private Context mContext;
     private List<JavaMailPackage> mEmailList;
     private FragmentManager mFragMan;
@@ -69,7 +71,7 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<EmailRecycler
 
                 String content = javaMailPackage.getContent();
                 Bundle args = new Bundle();
-                args.putString("MESSAGE_STRING_CONTENT", content);
+                args.putString(MESSAGE_STRING_CONTENT, content);
                 emailDialog.setArguments(args);
 
                 emailDialog.show(mFragMan, "show email");

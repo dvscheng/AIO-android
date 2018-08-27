@@ -45,21 +45,6 @@ public class HomeActivity extends AppCompatActivity {
 
     /** The pager adapter, which provides the pages to the view pager widget. */
     private ScreenSlidePagerAdapter mPagerAdapter;      // was PagerAdapter
-    private GetPermissionsDialogListener mEmailFragment;
-
-    public interface GetPermissionsDialogListener {
-        /** Send data to the Activity in the form of strings STR. */
-        void onDialogClose(int requestCode, int resultCode, Intent data);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == EmailFragment.REQUEST_ACCOUNT_PICKER) {
-            mEmailFragment.onDialogClose(requestCode, resultCode, data);
-        }
-    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -105,11 +90,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Create a notification channel
         createNotificationChannel();
-
-        // for permissions callback
-        mEmailFragment = mPagerAdapter.getEmailFrag();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -19,7 +19,7 @@ public class ShowEmailDialogFragment extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // the content
-        View root = inflater.inflate(R.layout.dialog_email_fragment, null);
+        View root = inflater.inflate(R.layout.dialog_show_email_fragment, null);
         root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         // creating the fullscreen dialog
@@ -29,8 +29,8 @@ public class ShowEmailDialogFragment extends DialogFragment {
         // dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));       // mandatory for fullscreen... why?
         // dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        String result = getArguments().getString("MESSAGE_STRING_CONTENT");
-        mWebView = root.findViewById(R.id.web_view);
+        String result = getArguments().getString(EmailRecyclerViewAdapter.MESSAGE_STRING_CONTENT);
+        mWebView = root.findViewById(R.id.webView_show_email_dialog_fragment);
         mWebView.loadDataWithBaseURL("email://", result, "text/html", "utf-8", null);
 
         return dialog;

@@ -38,7 +38,7 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 
-public class EmailFragment extends Fragment implements HomeActivity.GetPermissionsDialogListener {
+public class EmailFragment extends Fragment {
 
     private Context mContext;
     private RecyclerView mRecyclerView;
@@ -46,12 +46,6 @@ public class EmailFragment extends Fragment implements HomeActivity.GetPermissio
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
     private EmailFragment mTargetFragment;
-
-    /* Google API */
-    GoogleAccountCredential mCredential;
-    private TextView mOutputText;
-    private Button mButton;
-    ProgressDialog mProgress;
 
     private AuthenticationPreferences mAuthPrefs;
     private AccountManager mAccountManager;
@@ -146,15 +140,19 @@ public class EmailFragment extends Fragment implements HomeActivity.GetPermissio
     }
 
     @Override
-    public void onDialogClose(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            mAuthPrefs.setUsername(accountName);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-            // TODO: more efficient way to check validity of tokens?
-            // invalidate the token to make sure we have a token that is sure to work
-            invalidateToken();
-            requestToken();
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == EmailFragment.REQUEST_ACCOUNT_PICKER) {
+                String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                mAuthPrefs.setUsername(accountName);
+
+                // TODO: more efficient way to check validity of tokens?
+                // invalidate the token to make sure we have a token that is sure to work
+                invalidateToken();
+                requestToken();
+            }
         } else if (resultCode == Activity.RESULT_CANCELED) {
             // resend
         }
