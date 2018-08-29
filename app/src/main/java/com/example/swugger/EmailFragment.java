@@ -92,7 +92,12 @@ public class EmailFragment extends Fragment {
         mAccountManager = AccountManager.get(mContext);
         mAuthPrefs = new AuthenticationPreferences(mContext);
 
-        if (mAuthPrefs.getUsername() == null || mAuthPrefs.getToken() == null) {
+        if (mAuthPrefs.getUsername() != null || mAuthPrefs.getToken() != null) {
+            // to make sure we get a valid token we can use
+            invalidateToken();
+            requestToken();
+            // TODO: make a method that calls these two and implies that retrieveMessages is called
+        } else {
             chooseAccount();
         }
 
