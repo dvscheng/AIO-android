@@ -1,10 +1,11 @@
 package com.example.swugger;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
@@ -25,7 +26,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class EditEventDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, AddReminderDialogFragment.AddReminderDialogListener, RemindersAdapter.RemindersAdapterListener {
+public class EditEventDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener,
+        AddReminderDialogFragment.AddReminderDialogListener, RemindersAdapter.RemindersAdapterListener {
 
     public static final long millisecondsPerDay = 86400000;
     public static final long millisecondsPerHour = 3600000;
@@ -35,6 +37,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
     private Event mEvent;
     private Context mContext;
     private ImageButton mBackButton;
+    private ImageButton mDeleteButton;
     private ImageButton mSaveButton;
     private RelativeLayout mDateLayout;
     private RelativeLayout mTimeLayout;
@@ -157,11 +160,12 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
          * boolean dateChanged = whether a new date has been chosen by user
          * boolean timeChanged = whether a new time has been chosen by user
          * the rest are params for an Event */
-        void onPositiveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged,
-                                 String newName, String newNotes,
-                                 int newMonth, int newDay, int newYear, int newHour, int newMinute,
-                                 ArrayList<Reminder> displayedReminderList, ArrayList<ReminderWithId> remindersToDeleteList);
-        void onNegativeClickEdit();
+        void onSaveClickEdit(Event event, boolean hasEdits, boolean dateChanged, boolean timeChanged,
+                             String newName, String newNotes,
+                             int newMonth, int newDay, int newYear, int newHour, int newMinute,
+                             ArrayList<Reminder> displayedReminderList, ArrayList<ReminderWithId> remindersToDeleteList);
+        void onBackClickEdit();
+        void onDeleteClickEdit(Event event);
     }
 
     @Override
@@ -194,8 +198,32 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
             @Override
             public void onClick(View v) {
                 // TODO: show confirmation dialog if changes have been made
-                mCallback.onNegativeClickEdit();
+                mCallback.onBackClickEdit();
                 dialog.dismiss();
+            }
+        });
+        mDeleteButton = root.findViewById(R.id.button_delete_edit_event_dialog);
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(R.string.delete_event_dialog_title)
+                        .setMessage(R.string.delete_event_dialog_text)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mCallback.onDeleteClickEdit(mEvent);
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // DO NOTHING
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
         mSaveButton = (ImageButton) root.findViewById(R.id.button_save_edit_event_dialog);
@@ -218,7 +246,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
                     newHour = mTimePicker.getCurrentHour();
                     newMinute = mTimePicker.getCurrentMinute();
                 }
-                mCallback.onPositiveClickEdit(mEvent, hasBeenEdited(), dateChanged(), timeChanged(),
+                mCallback.onSaveClickEdit(mEvent, hasBeenEdited(), dateChanged(), timeChanged(),
                                                 newName, newNotes,
                                                 newMonth, newDay, newYear, newHour, newMinute,
                                                 displayedRemindersList, remindersToDeleteList);

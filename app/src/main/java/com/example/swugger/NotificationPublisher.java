@@ -4,11 +4,8 @@ import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import androidx.core.app.NotificationManagerCompat;
-import android.util.Log;
 
-import static android.content.ContentValues.TAG;
+import androidx.core.app.NotificationManagerCompat;
 
 /**
  * Created by David on 8/18/2018.
@@ -19,6 +16,7 @@ public class NotificationPublisher extends BroadcastReceiver {
     public final static String EVENT_CHANNEL_ID = "event_channel_id";
     public final static String EVENT_NOTIFICATION = "event_notification";
     public final static String EVENT_NOTIFICATION_ID = "event_notification_id";
+    public final static String REMINDER_NOTIFICATION_ID = "reminder_notification_id";
     public final static String DEBUG_NOTIFICATION = "debug_notification";
     public final static String DEBUG_NOTIFICATION_ID = "debug_notification_id";
 

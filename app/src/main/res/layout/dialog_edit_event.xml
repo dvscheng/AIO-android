@@ -26,6 +26,16 @@
             android:background="?selectableItemBackground" />
 
         <ImageButton
+            android:id="@+id/button_delete_edit_event_dialog"
+            android:layout_width="39dp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/button_save_edit_event_dialog"
+            android:src="@drawable/ic_close_black_24dp"
+            android:tint="@color/white"
+            android:background="?selectableItemBackground" />
+
+        <ImageButton
             android:id="@+id/button_save_edit_event_dialog"
             android:layout_width="78dp"
             android:layout_height="match_parent"
@@ -118,8 +128,10 @@
                 android:id="@+id/listView_reminder_edit_event_dialog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/button_add_reminder_edit_event_dialog"
-                android:layout_toRightOf="@+id/image_reminder_edit_event_dialog" >
+                android:paddingTop="8dp"
+                android:layout_toRightOf="@+id/image_reminder_edit_event_dialog"
+                android:dividerHeight="10.0sp"
+                android:divider="#00000000">
 
             </ListView>
 

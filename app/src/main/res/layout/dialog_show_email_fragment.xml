@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <WebView
+        android:id="@+id/webView_show_email_dialog_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </WebView>
+
+</LinearLayout>

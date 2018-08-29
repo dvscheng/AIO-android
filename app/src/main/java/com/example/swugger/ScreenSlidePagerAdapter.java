@@ -1,5 +1,7 @@
 package com.example.swugger;
 
+import android.content.Context;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -9,11 +11,14 @@ import androidx.fragment.app.FragmentPagerAdapter;
 public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
     /** The number of pages defaulted to 3 (email, calender, tasks). */
     private static final int NUM_PAGES = 3;
+    private Context mContext;
+    private EmailFragment mEmailFragment;
     private EventsFragment mEventFrag;
     private TasksFragment mTaskFrag;
 
-    public ScreenSlidePagerAdapter(FragmentManager fm) {
+    public ScreenSlidePagerAdapter(FragmentManager fm, Context context) {
         super(fm);
+        mContext = context;
     }
 
     /** If there is not already an item at POSITION,
@@ -21,7 +26,8 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new EmailFragment();
+            mEmailFragment = new EmailFragment();
+            return mEmailFragment;
         } else if (position == 1) {
             // TODO: is this the best way to get a reference to the event fragment?
             mEventFrag = new EventsFragment();
@@ -38,11 +44,11 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if (position == 0) {
-            return "Email";
+            return mContext.getString(R.string.email_tab_name);
         } else if (position == 1) {
-            return "Calendar";
+            return mContext.getString(R.string.calendar_tab_name);
         } else if (position == 2) {
-            return "Tasks";
+            return mContext.getString(R.string.tasks_tab_name);
         } else {
             throw new IllegalArgumentException(
                     "call getPageTitle(" + position + ") is illegal, 0 <= arg < 3");
@@ -53,6 +59,7 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return NUM_PAGES;
     }
+    public EmailFragment getEmailFrag() { return mEmailFragment; }
     public EventsFragment getEventFrag() { return mEventFrag; }
     public TasksFragment getTaskFrag() { return mTaskFrag; }
 }

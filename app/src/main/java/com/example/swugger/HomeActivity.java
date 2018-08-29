@@ -24,6 +24,7 @@ import android.view.MenuItem;
 
 import com.example.swugger.db.EventContract;
 import com.example.swugger.db.ReminderContract;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -46,6 +47,16 @@ public class HomeActivity extends AppCompatActivity {
     /** The pager adapter, which provides the pages to the view pager widget. */
     private ScreenSlidePagerAdapter mPagerAdapter;      // was PagerAdapter
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.hasExtra(NotificationPublisher.REMINDER_NOTIFICATION_ID)) {
+            int reminderId = intent.getIntExtra(NotificationPublisher.REMINDER_NOTIFICATION_ID, -1);
+            mPagerAdapter.getEventFrag().onNotificationClick(reminderId);
+        }
+    }
+
     /** 1. Set the toolbar.
      *  5. Create a PagerTabStrip (the white indicator of which tab you're on),
      *      set the color to white (I think), and set the Strings' color to white.
@@ -66,14 +77,19 @@ public class HomeActivity extends AppCompatActivity {
         FragmentManager fragMan = getSupportFragmentManager();
 
         // 5.
-        PagerTabStrip tabStrip = (PagerTabStrip) findViewById(R.id.pagertabstrip_main);
+        /*TabLayout tabLayout = findViewById(R.id.tabLayout_main);
+        tabLayout.setTabIconTintResource(R.color.white);
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_access_time_black_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_today_black_24dp);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_done_black_24dp);*/
+        /*PagerTabStrip tabStrip = (PagerTabStrip) findViewById(R.id.pagertabstrip_main);
         tabStrip.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         tabStrip.setTextColor(Color.WHITE);
-        tabStrip.setTabIndicatorColor(Color.WHITE);
+        tabStrip.setTabIndicatorColor(Color.WHITE);*/
 
         // 6.
         mPager = (ViewPager) findViewById(R.id.viewpager_main);
-        mPagerAdapter = new ScreenSlidePagerAdapter(fragMan);
+        mPagerAdapter = new ScreenSlidePagerAdapter(fragMan, this);
         mPager.setAdapter(mPagerAdapter);
         mPager.setOffscreenPageLimit(NUM_OF_FRAGMENTS_OFF_SCREEN);
         mPager.setCurrentItem(1);
@@ -81,7 +97,6 @@ public class HomeActivity extends AppCompatActivity {
         // Create a notification channel
         createNotificationChannel();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

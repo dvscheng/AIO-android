@@ -23,14 +23,37 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar_main">
 
-        <androidx.viewpager.widget.PagerTabStrip
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            style="@style/Widget.MaterialComponents.TabLayout"
+            app:tabBackground="@color/colorPrimary"
+            app:tabIndicatorColor="@color/white"
+            app:tabTextColor="@color/colorAccentLite"
+            app:tabSelectedTextColor="@color/white">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <!--<androidx.viewpager.widget.PagerTabStrip
             android:id="@+id/pagertabstrip_main"
             android:elevation="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:paddingBottom="4dp"
-            android:paddingTop="4dp" />
+            android:paddingTop="4dp" />-->
 
     </androidx.viewpager.widget.ViewPager>
 

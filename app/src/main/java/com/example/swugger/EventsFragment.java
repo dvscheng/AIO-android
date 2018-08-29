@@ -11,12 +11,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,10 +95,10 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
     /* Positive click for edit event dialog. */
     @Override
-    public void onPositiveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged,
-                                    String newName, String newNotes,
-                                    int newMonth, int newDay, int newYear, int newHour, int newMinute,
-                                    ArrayList<Reminder> displayedReminderList, ArrayList<ReminderWithId> remindersToDeleteList) {
+    public void onSaveClickEdit(Event origEvent, boolean hasEdits, boolean dateChanged, boolean timeChanged,
+                                String newName, String newNotes,
+                                int newMonth, int newDay, int newYear, int newHour, int newMinute,
+                                ArrayList<Reminder> displayedReminderList, ArrayList<ReminderWithId> remindersToDeleteList) {
         // TODO: get the new event info from the dialog instance and update the event and refresh recyclerview
         SQLiteDatabase db = eventDbHelper.getReadableDatabase();
         if (hasEdits) {
@@ -123,7 +126,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             if (dateChanged) {
                 // if somehow these values are -1, do not update, something is wrong
                 if (newMonth == -1 || newDay == -1 || newYear == -1) {
-                    throw new IllegalArgumentException("attempted to update the date without valid params, check EventsFragment.onPositiveClickEdit");
+                    throw new IllegalArgumentException("attempted to update the date without valid params, check EventsFragment.onSaveClickEdit");
                 }
                 contentValues.put(EventContract.EventEntry.COL_EVENT_MONTH, Integer.toString(newMonth));
                 contentValues.put(EventContract.EventEntry.COL_EVENT_DAY, Integer.toString(newDay));
@@ -132,7 +135,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             if (timeChanged) {
                 // if somehow these values are -1, do not update, something is wrong
                 if (newHour == -1 || newMinute == -1) {
-                    throw new IllegalArgumentException("attempted to update the time without valid params (they're -1), check EventsFragment.onPositiveClickEdit");
+                    throw new IllegalArgumentException("attempted to update the time without valid params (they're -1), check EventsFragment.onSaveClickEdit");
                 }
                 contentValues.put(EventContract.EventEntry.COL_EVENT_HOUR, Integer.toString(newHour));
                 contentValues.put(EventContract.EventEntry.COL_EVENT_MINUTE, Integer.toString(newMinute));
@@ -199,11 +202,22 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
     }
     /* Negative click for edit event dialog. */
     @Override
-    public void onNegativeClickEdit() {
+    public void onBackClickEdit() {
         // Don't do anything
     }
 
+    /** Delete the current event. */
+    @Override
+    public void onDeleteClickEdit(Event event) {
+        deleteFromDatabase(event);
+        refreshEventRecyclerView(currentMonth, currentDay, currentYear);
+    }
 
+    /** Called when a notification attached with a reminder is clicked on. */
+    public void onNotificationClick(int reminderId){
+        // delete the reminder from the db
+        deleteFromDatabase(ReminderContract.ReminderEntry.TABLE_NAME, reminderId);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -216,8 +230,8 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         mCalendarView = (CalendarView) rootView.findViewById(R.id.calendarView_events_fragment);
         mTargetFragment = this;
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_events_fragment);
-        eventDbHelper = new EventDbHelper(mContext);
-        reminderDbHelper = new ReminderDbHelper(mContext);
+        eventDbHelper = EventDbHelper.getInstance(mContext);
+        reminderDbHelper = ReminderDbHelper.getInstance(mContext);
         mEventList = new ArrayList<>();
 
         // convert from epoch to readable time
@@ -225,7 +239,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         String date = Event.convertEpochToReadableDate(mCalendarView.getDate());
         // we parseInt and then toString to get rid of leading 0's. i.e. "07" -> "7"
         currentMonth = Integer.parseInt(date.substring(0, 2)) - 1;  // months in db are saved as between [0-11] so need to decrement the month # by 1
-        currentDay =  Integer.parseInt(date.substring(3, 5));
+        currentDay = Integer.parseInt(date.substring(3, 5));
         currentYear = Integer.parseInt(date.substring(6, 10));
 
         // Specify and set an adapter
@@ -422,6 +436,40 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         int rowsDeleted = db.delete(tableName, whereClause, whereArgs);
         return rowsDeleted;
     }
+    private int deleteFromDatabase(String tableName, long id) {
+        SQLiteOpenHelper dbHelper;
+        String whereClause;
+        String[] whereArgs = new String[]{ Long.toString(id) };
+        switch (tableName) {
+            case EventContract.EventEntry.TABLE_NAME:
+                dbHelper = eventDbHelper;
+                whereClause = EventContract.EventEntry._ID + " =?";
+                break;
+
+            case ReminderContract.ReminderEntry.TABLE_NAME:
+                dbHelper = reminderDbHelper;
+                whereClause = ReminderContract.ReminderEntry._ID + " =?";
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid table name, check EventsFragment.deleteFromDatabase");
+        }
+
+        int rowsDeleted = deleteFromDatabase(dbHelper, tableName, whereClause, whereArgs);
+        return rowsDeleted;
+    }
+    /** Deletes the event along with its reminders. Returns # of events and reminders deleted. */
+    private int[] deleteFromDatabase(Event event) {
+        String eventWhereClause = EventContract.EventEntry._ID + " =?";
+        String reminderWhereClause = ReminderContract.ReminderEntry.COL_REMINDER_EVENT_ID + " =?";
+        String whereArgs[] = { Long.toString(event.getId()) };
+
+        int[] rowsDeleted = new int[2];
+        rowsDeleted[0] = deleteFromDatabase(eventDbHelper, EventContract.EventEntry.TABLE_NAME, eventWhereClause, whereArgs);
+        rowsDeleted[1] = deleteFromDatabase(reminderDbHelper, ReminderContract.ReminderEntry.TABLE_NAME, reminderWhereClause, whereArgs);
+
+        return rowsDeleted;
+    }
     /** Used for Debugging, print all rows of the given database. */
     // TODO: make it a static method of an appropriate class
     public void printDatabase(String tableName) {
@@ -445,15 +493,16 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
             } while (allRows.moveToNext());
         }
         allRows.close();
-        System.out.println(tableString);
+        Log.i("print", tableString);
     }
     /** Create a Notification object, which contains content given by the given event and reminder. */
     private Notification createNotification(Event event, ReminderWithId reminder) {
         Intent intent = new Intent(mContext, HomeActivity.class);
+        intent.putExtra(NotificationPublisher.REMINDER_NOTIFICATION_ID, (int) reminder.getId());
         // intent.setFlags()  TODO: do this later
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, NotificationPublisher.EVENT_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_today_black_24dp)
                 .setContentTitle(event.getName())
                 .setContentText("Your event is in " + reminder.toString())      // TODO: consider reformatting string to be more readable
