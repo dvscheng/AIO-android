@@ -5,8 +5,8 @@
 
     <WebView
         android:id="@+id/webView_show_email_dialog_fragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     </WebView>
 
 </LinearLayout>

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.example.swugger"
+        applicationId "com.example.AIO"
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
@@ -64,4 +64,5 @@ dependencies {
     }
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     implementation files('libs/javax.mail.jar')
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 }
