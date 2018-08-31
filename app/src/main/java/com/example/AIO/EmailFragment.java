@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
@@ -89,13 +90,13 @@ public class EmailFragment extends Fragment {
         mRecyclerViewLayoutManager = new LinearLayoutManager(mContext);
         mRecyclerView.setLayoutManager(mRecyclerViewLayoutManager);
 
+        // Refresh the recycler view when pulling up on recyclerview
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout_email_fragment);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccentLite, R.color.colorAccent);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                invalidateToken();
-                requestToken();
+                refreshEmailRecyclerView();
             }
         });
 
@@ -109,36 +110,35 @@ public class EmailFragment extends Fragment {
         mAccountManager = AccountManager.get(mContext);
         mAuthPrefs = new AuthenticationPreferences(mContext);
 
-        if (mAuthPrefs.getUsername() != null || mAuthPrefs.getToken() != null) {
-            // to make sure we get a valid token we can use
-            invalidateToken();
-            requestToken();
-            // TODO: make a method that calls these two and implies that retrieveMessages is called
-        } else {
-            chooseAccount();
-        }
+        refreshEmailRecyclerView();
 
         return rootView;
     }
 
+    /** Prompts to select email account if none has already been selected,
+     * or receives messages for the currently selected email. */
+    private void refreshEmailRecyclerView() {
+        if (mAuthPrefs.getUsername() != null || mAuthPrefs.getToken() != null) {
+            // to make sure we get a valid token we can use
+            refreshTokenAndReceiveMessages();
+        } else {
+            chooseAccount();
+        }
+    }
+
+    /** Should only be called when account has already been selected.
+     * Refresh the current token and then receive messages. */
+    private void refreshTokenAndReceiveMessages() {
+        invalidateToken();
+        requestToken();
+    }
+    /** Do not call by itself, call refreshTokenAndReceiveMessages() */
     private void retrieveMessages() {
         String[] params = { mAuthPrefs.getUsername(), mAuthPrefs.getToken() };
         new GetMessages().execute(params);
     }
-
-    private void chooseAccount() {
-        Intent intent = AccountManager.newChooseAccountIntent(null,
-                null,
-                new String[]{ GOOGLE_ACCOUNT_TYPE },
-                false,
-                null,
-                null,
-                null,
-                null);
-        startActivityForResult(intent, REQUEST_ACCOUNT_PICKER);
-    }
-
-    /** Also gets messages */
+    /** Do not call by itself, call refreshTokenAndReceiveMessages()
+     * Also gets messages */
     private void requestToken() {
         // TODO: clean this up so we dont have to call here
         mSwipeRefreshLayout.setRefreshing(true);
@@ -155,14 +155,25 @@ public class EmailFragment extends Fragment {
         mAccountManager.getAuthToken(userAccount, "oauth2:" + SCOPE, null, getActivity(),
                 new GetTokenCallback(), null);
     }
-
-    /** Should be called before requestToken when refreshing. */
+    /** Do not call by itself, call refreshTokenAndReceiveMessages()
+     * Should be called before requestToken when refreshing. */
     private void invalidateToken() {
-        // TODO: can change this to mAccountManager
-        AccountManager accountManager = AccountManager.get(mContext);
-        accountManager.invalidateAuthToken(GOOGLE_ACCOUNT_TYPE, mAuthPrefs.getToken());
+        mAccountManager.invalidateAuthToken(GOOGLE_ACCOUNT_TYPE, mAuthPrefs.getToken());
 
         mAuthPrefs.setToken(null);
+    }
+
+    /** Requests access to an email account. */
+    private void chooseAccount() {
+        Intent intent = AccountManager.newChooseAccountIntent(null,
+                null,
+                new String[]{ GOOGLE_ACCOUNT_TYPE },
+                false,
+                null,
+                null,
+                null,
+                null);
+        startActivityForResult(intent, REQUEST_ACCOUNT_PICKER);
     }
 
     @Override
@@ -176,11 +187,10 @@ public class EmailFragment extends Fragment {
 
                 // TODO: more efficient way to check validity of tokens?
                 // invalidate the token to make sure we have a token that is sure to work
-                invalidateToken();
-                requestToken();
+                refreshTokenAndReceiveMessages();
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            // resend
+            Toast.makeText(mContext, "Choose an email to start loading your inbox!", Toast.LENGTH_SHORT).show();
         }
     }
 
