@@ -65,8 +65,8 @@ public class EmailFragment extends Fragment {
     private int currentPage = PAGE_START;
     //
     private boolean isPulledDown = false;
-    //
-    public static final int NUM_MESSAGES_TO_RETRIEVE = 12;
+    // indicates the number of messages to retrieve, 0-indexed, meaning 11 is 12 messages to retrieve
+    public static final int NUM_MESSAGES_TO_RETRIEVE = 11;
 
     public int loadingState = LOADING_INITIAL;
     private static final int LOADING_INITIAL = 0;
@@ -142,6 +142,8 @@ public class EmailFragment extends Fragment {
                 if (!isLoading) {
                     setLoadingState(LOADING_PULLED);
                     refreshEmailRecyclerView();
+                } else {
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -178,8 +180,8 @@ public class EmailFragment extends Fragment {
                 break;
 
             case LOADING_FINISHED:
-                isPulledDown = false;
                 isLoading = false;
+                isPulledDown = false;
                 break;
         }
     }
@@ -329,26 +331,24 @@ public class EmailFragment extends Fragment {
                 // currently displayed emails. otherwise, retrieve new emails
                 javax.mail.Message[] messages;
                 int totalMessagesInInbox = inbox.getMessageCount();
-                int currentNumMessages = mRecyclerViewAdapter.getItemCount();
-                int targetNumMessages = currentNumMessages + NUM_MESSAGES_TO_RETRIEVE;
+                int currentNumMessages = mRecyclerViewAdapter.getCount(false); // getItemCount() includes the loading header
+                int targetNumMessages = totalMessagesInInbox - (currentNumMessages + NUM_MESSAGES_TO_RETRIEVE);
 
-                if (targetNumMessages > totalMessagesInInbox) {
+                if (targetNumMessages < 1) {
                     TOTAL_PAGES = currentPage;
                     isLastPage = true;
-                    targetNumMessages = totalMessagesInInbox;
+                    targetNumMessages = 1;
                 }
                 // don't take more than the total message count of the inbox
                 switch (loadingState) {
                     case LOADING_INITIAL:
-                        messages = inbox.getMessages(1, NUM_MESSAGES_TO_RETRIEVE);
-                        break;
-
                     case LOADING_PULLED:
-                        messages = inbox.getMessages(1, currentNumMessages);
+                        // TODO: make pulling down only fetch NEW, UNREAD messages
+                        messages = inbox.getMessages(totalMessagesInInbox - NUM_MESSAGES_TO_RETRIEVE, totalMessagesInInbox);
                         break;
 
                     case LOADING_SCROLLED:
-                        messages = inbox.getMessages(currentNumMessages, targetNumMessages);
+                        messages = inbox.getMessages(targetNumMessages, totalMessagesInInbox - currentNumMessages);
                         break;
 
                     default:
@@ -357,10 +357,11 @@ public class EmailFragment extends Fragment {
                 }
 
 
-
-                for (javax.mail.Message msg : messages) {
+                for (int i = messages.length-1; i >= 0; i--) {
                     try {
-                        JavaMailPackage newPackage = new JavaMailPackage(msg, (InternetAddress) msg.getFrom()[0], msg.getSubject(), msg.getReceivedDate(), getText(msg));
+                        JavaMailPackage newPackage = new JavaMailPackage(messages[i],
+                                (InternetAddress) messages[i].getFrom()[0], messages[i].getSubject(), messages[i].getReceivedDate(),
+                                getText(messages[i]));
                         javaMailPackages.add(newPackage);
                     } catch (MessagingException e) {
                         e.printStackTrace();
@@ -398,6 +399,7 @@ public class EmailFragment extends Fragment {
                         @Override
                         public void onGlobalLayout() {
                             mSwipeRefreshLayout.setRefreshing(false);
+                            setLoadingState(LOADING_FINISHED);
                             // Remove the listener to make sure it isn't called again
                             mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         }
@@ -409,6 +411,7 @@ public class EmailFragment extends Fragment {
                         @Override
                         public void onGlobalLayout() {
                             mRecyclerViewAdapter.removeLoadingFooter();
+                            setLoadingState(LOADING_FINISHED);
                             // Remove the listener to make sure it isn't called again
                             mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         }
@@ -418,6 +421,7 @@ public class EmailFragment extends Fragment {
                 default:
 
             }
+
             mRecyclerViewAdapter.addAll(result);
 
             /*if (isPulledDown) {
@@ -447,8 +451,6 @@ public class EmailFragment extends Fragment {
             }*/
 
             mRecyclerViewAdapter.notifyDataSetChanged();
-
-            setLoadingState(LOADING_FINISHED);
 
             /*WebView webView = findViewById(R.id.web_view);
             webView.loadDataWithBaseURL("email://", result, "text/html", "utf-8", null);*/

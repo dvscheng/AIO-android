@@ -71,7 +71,7 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             viewHolder = new LoadingViewHolder(loadingFooter);
 
             isLoadingAdded = false;
-            loadingFooterIndex = i;
+            loadingFooterIndex = mEmailList.size()-1;
         } else {
             View emailView = inflater.inflate(R.layout.item_email, viewGroup, false);
 
@@ -85,7 +85,8 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         final JavaMailPackage javaMailPackage = mEmailList.get(i);
 
-        if (viewHolder instanceof EmailViewHolder && i != loadingFooterIndex) {
+        if (viewHolder instanceof EmailViewHolder && i != loadingFooterIndex && !isLoadingAdded) {
+            // TODO: "read" messages are in bold
             EmailViewHolder emailViewHolder = (EmailViewHolder) viewHolder;
             emailViewHolder.mTitleTextView.setText(javaMailPackage.getFrom().getPersonal());
             emailViewHolder.mSubjectTextView.setText(javaMailPackage.getSubject());
@@ -95,6 +96,7 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             emailViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // TODO: flag the message as "read"
                     EmailShowDialogFragment emailDialog = new EmailShowDialogFragment();
 
                     String content = javaMailPackage.getContent();
@@ -118,6 +120,11 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public int getItemCount() {
         return mEmailList.size();
+    }
+
+    public int getCount(boolean withHeader) {
+        int size = mEmailList.size();
+        return (withHeader && loadingFooterIndex != -1 && isLoadingAdded) ? size : size-1;
     }
 
     public void add(JavaMailPackage javaMailPackage) {
@@ -152,6 +159,7 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     public void addLoadingFooter() {
         isLoadingAdded = true;
         add(new JavaMailPackage(null, null, null, null, "loading footer"));
+        loadingFooterIndex = mEmailList.size() - 1;
         notifyItemInserted(mEmailList.size() - 1);
     }
 
