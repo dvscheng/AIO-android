@@ -7,7 +7,6 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -18,24 +17,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Folder;
-import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
@@ -43,21 +38,44 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 public class EmailFragment extends Fragment {
 
     private Context mContext;
     private RecyclerView mRecyclerView;
     private List<JavaMailPackage> mJavaMailPackageList;
-    private RecyclerView.Adapter mRecyclerViewAdapter;
-    private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
+    private EmailRecyclerViewAdapter mRecyclerViewAdapter;
+    private LinearLayoutManager mRecyclerViewLayoutManager;
+    private ProgressBar mProgressBar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private EmailFragment mTargetFragment;
 
     private AuthenticationPreferences mAuthPrefs;
     private AccountManager mAccountManager;
 
+    // Index from which pagination should start (0 is 1st page in our case)
+    private static final int PAGE_START = 0;
+    // Indicates if footer ProgressBar is shown (i.e. next page is loading)
+    private boolean isLoading = false;
+    // If current page is the last page (Pagination will stop after this page load)
+    private boolean isLastPage = false;
+    // total no. of pages to load. Initial load is page 0, after which 4 more pages will load.
+    private int TOTAL_PAGES = 5;
+    // indicates the current page which Pagination is fetching.
+    private int currentPage = PAGE_START;
+    //
+    private boolean isPulledDown = false;
+    //
+    public static final int NUM_MESSAGES_TO_RETRIEVE = 12;
+
+    public int loadingState = LOADING_INITIAL;
+    private static final int LOADING_INITIAL = 0;
+    private static final int LOADING_PULLED = 1;
+    private static final int LOADING_SCROLLED = 2;
+    private static final int LOADING_FINISHED = 3;
+
+
+    /** Javamail API */
     public static final String GOOGLE_ACCOUNT_TYPE = "com.google";
     private static final String SCOPE = "https://mail.google.com";
     public static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -81,6 +99,8 @@ public class EmailFragment extends Fragment {
 
         mContext = getContext();
 
+        mProgressBar = rootView.findViewById(R.id.progressBar_email_item_footer);
+
         mRecyclerView = rootView.findViewById(R.id.recyclerView_email_fragment);
         mJavaMailPackageList = new ArrayList<>();
         mRecyclerViewAdapter = new EmailRecyclerViewAdapter(mContext, mJavaMailPackageList, getFragmentManager());
@@ -90,13 +110,39 @@ public class EmailFragment extends Fragment {
         mRecyclerViewLayoutManager = new LinearLayoutManager(mContext);
         mRecyclerView.setLayoutManager(mRecyclerViewLayoutManager);
 
+        mRecyclerView.addOnScrollListener(new PaginationScrollListener(mRecyclerViewLayoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                setLoadingState(LOADING_SCROLLED);
+                refreshEmailRecyclerView();
+            }
+
+            @Override
+            public int getTotalPageCount() {
+                return TOTAL_PAGES;
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
+
         // Refresh the recycler view when pulling up on recyclerview
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout_email_fragment);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccentLite, R.color.colorAccent);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccentLite, R.color.colorPrimary);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshEmailRecyclerView();
+                if (!isLoading) {
+                    setLoadingState(LOADING_PULLED);
+                    refreshEmailRecyclerView();
+                }
             }
         });
 
@@ -110,22 +156,43 @@ public class EmailFragment extends Fragment {
         mAccountManager = AccountManager.get(mContext);
         mAuthPrefs = new AuthenticationPreferences(mContext);
 
+        setLoadingState(LOADING_INITIAL);
         refreshEmailRecyclerView();
 
         return rootView;
     }
 
+    private void setLoadingState(int state) {
+        loadingState = state;
+        isLoading = true;
+        switch (state) {
+            case LOADING_INITIAL:
+            case LOADING_PULLED:
+                isPulledDown = true;
+                mSwipeRefreshLayout.setRefreshing(true);
+                break;
+
+            case LOADING_SCROLLED:
+                currentPage += 1; //Increment page index to load the next one
+                mRecyclerViewAdapter.addLoadingFooter();
+                break;
+
+            case LOADING_FINISHED:
+                isPulledDown = false;
+                isLoading = false;
+                break;
+        }
+    }
     /** Prompts to select email account if none has already been selected,
      * or receives messages for the currently selected email. */
     private void refreshEmailRecyclerView() {
-        if (mAuthPrefs.getUsername() != null || mAuthPrefs.getToken() != null) {
+        if (mAuthPrefs.getUsername() != null && mAuthPrefs.getToken() != null) {
             // to make sure we get a valid token we can use
             refreshTokenAndReceiveMessages();
         } else {
             chooseAccount();
         }
     }
-
     /** Should only be called when account has already been selected.
      * Refresh the current token and then receive messages. */
     private void refreshTokenAndReceiveMessages() {
@@ -140,9 +207,6 @@ public class EmailFragment extends Fragment {
     /** Do not call by itself, call refreshTokenAndReceiveMessages()
      * Also gets messages */
     private void requestToken() {
-        // TODO: clean this up so we dont have to call here
-        mSwipeRefreshLayout.setRefreshing(true);
-
         Account userAccount = null;
         String username = mAuthPrefs.getUsername();
         for (Account account : mAccountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE)) {
@@ -190,6 +254,8 @@ public class EmailFragment extends Fragment {
                 refreshTokenAndReceiveMessages();
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
+            isPulledDown = false;
+            mSwipeRefreshLayout.setRefreshing(false);
             Toast.makeText(mContext, "Choose an email to start loading your inbox!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -259,7 +325,39 @@ public class EmailFragment extends Fragment {
                 inbox.open(Folder.READ_ONLY);
                 //Return result to array of message
 
-                javax.mail.Message[] messages = inbox.getMessages();
+                // if the user pulled-down the recyclerview, then just retrieve the same # of
+                // currently displayed emails. otherwise, retrieve new emails
+                javax.mail.Message[] messages;
+                int totalMessagesInInbox = inbox.getMessageCount();
+                int currentNumMessages = mRecyclerViewAdapter.getItemCount();
+                int targetNumMessages = currentNumMessages + NUM_MESSAGES_TO_RETRIEVE;
+
+                if (targetNumMessages > totalMessagesInInbox) {
+                    TOTAL_PAGES = currentPage;
+                    isLastPage = true;
+                    targetNumMessages = totalMessagesInInbox;
+                }
+                // don't take more than the total message count of the inbox
+                switch (loadingState) {
+                    case LOADING_INITIAL:
+                        messages = inbox.getMessages(1, NUM_MESSAGES_TO_RETRIEVE);
+                        break;
+
+                    case LOADING_PULLED:
+                        messages = inbox.getMessages(1, currentNumMessages);
+                        break;
+
+                    case LOADING_SCROLLED:
+                        messages = inbox.getMessages(currentNumMessages, targetNumMessages);
+                        break;
+
+                    default:
+                        Log.d("loading state error", "loadingState was not in range [0, 3]");
+                        messages = new javax.mail.Message[0];
+                }
+
+
+
                 for (javax.mail.Message msg : messages) {
                     try {
                         JavaMailPackage newPackage = new JavaMailPackage(msg, (InternetAddress) msg.getFrom()[0], msg.getSubject(), msg.getReceivedDate(), getText(msg));
@@ -290,19 +388,67 @@ public class EmailFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<JavaMailPackage> result) {
-            mJavaMailPackageList.clear();
-            mJavaMailPackageList.addAll(result);
+            switch (loadingState) {
+                case LOADING_INITIAL:
+                case LOADING_PULLED:
+                    mRecyclerViewAdapter.clear();
 
-            // Set the layoutlistener to start listening for notifyDataSetChanged to finish
-            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    // Remove the listener to make sure it isn't called again
-                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            });
+                    // Set the layoutlistener to start listening for notifyDataSetChanged to finish
+                    mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            // Remove the listener to make sure it isn't called again
+                            mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+                    });
+                    break;
+
+                case LOADING_SCROLLED:
+                    mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            mRecyclerViewAdapter.removeLoadingFooter();
+                            // Remove the listener to make sure it isn't called again
+                            mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+                    });
+                    break;
+
+                default:
+
+            }
+            mRecyclerViewAdapter.addAll(result);
+
+            /*if (isPulledDown) {
+                mRecyclerViewAdapter.clear();
+
+                // Set the layoutlistener to start listening for notifyDataSetChanged to finish
+                mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        // Remove the listener to make sure it isn't called again
+                        mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                });
+            }
+            mRecyclerViewAdapter.addAll(result);
+
+            mProgressBar.setVisibility(View.GONE);
+*/
+            /*// handle whether or not to display the loading footer
+            if (currentPage < TOTAL_PAGES) {
+                mProgressBar.setVisibility(View.VISIBLE);
+                mRecyclerViewAdapter.addLoadingFooter();
+            } else {
+                mRecyclerViewAdapter.removeLoadingFooter();
+                isLastPage = true;
+            }*/
+
             mRecyclerViewAdapter.notifyDataSetChanged();
+
+            setLoadingState(LOADING_FINISHED);
 
             /*WebView webView = findViewById(R.id.web_view);
             webView.loadDataWithBaseURL("email://", result, "text/html", "utf-8", null);*/

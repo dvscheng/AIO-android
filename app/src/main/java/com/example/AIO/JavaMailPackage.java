@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MailDateFormat;
 
 public class JavaMailPackage {
 
@@ -41,6 +42,9 @@ public class JavaMailPackage {
     public String getReadableDate(boolean full) {
         // "EEE MMM dd HH:mm:ss zzz yyyy";
         String fullDate = date.toString();
+        // TODO: get the time too
+        //String time = new MailDateFormat().format(date);
+
         return full ? fullDate : fullDate.substring(4, 10);
     }
 
