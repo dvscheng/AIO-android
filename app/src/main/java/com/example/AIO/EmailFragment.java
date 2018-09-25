@@ -404,6 +404,9 @@ public class EmailFragment extends Fragment {
                             mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         }
                     });
+
+                    mRecyclerViewAdapter.addAll(result);
+                    mRecyclerViewAdapter.notifyDataSetChanged();
                     break;
 
                 case LOADING_SCROLLED:
@@ -416,13 +419,12 @@ public class EmailFragment extends Fragment {
                             mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         }
                     });
+
+                    int position = mRecyclerViewAdapter.getItemCount();
+                    mRecyclerViewAdapter.addAll(result);
+                    mRecyclerViewAdapter.notifyItemRangeInserted(position, result.size());
                     break;
-
-                default:
-
             }
-
-            mRecyclerViewAdapter.addAll(result);
 
             /*if (isPulledDown) {
                 mRecyclerViewAdapter.clear();
@@ -449,8 +451,6 @@ public class EmailFragment extends Fragment {
                 mRecyclerViewAdapter.removeLoadingFooter();
                 isLastPage = true;
             }*/
-
-            mRecyclerViewAdapter.notifyDataSetChanged();
 
             /*WebView webView = findViewById(R.id.web_view);
             webView.loadDataWithBaseURL("email://", result, "text/html", "utf-8", null);*/

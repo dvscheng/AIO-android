@@ -70,7 +70,7 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
             viewHolder = new LoadingViewHolder(loadingFooter);
 
-            isLoadingAdded = false;
+            isLoadingAdded = true;
             loadingFooterIndex = mEmailList.size()-1;
         } else {
             View emailView = inflater.inflate(R.layout.item_email, viewGroup, false);
@@ -85,7 +85,7 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         final JavaMailPackage javaMailPackage = mEmailList.get(i);
 
-        if (viewHolder instanceof EmailViewHolder && i != loadingFooterIndex && !isLoadingAdded) {
+        if (viewHolder instanceof EmailViewHolder && i != loadingFooterIndex) {
             // TODO: "read" messages are in bold
             EmailViewHolder emailViewHolder = (EmailViewHolder) viewHolder;
             emailViewHolder.mTitleTextView.setText(javaMailPackage.getFrom().getPersonal());
@@ -98,6 +98,7 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                 public void onClick(View view) {
                     // TODO: flag the message as "read"
                     EmailShowDialogFragment emailDialog = new EmailShowDialogFragment();
+
 
                     String content = javaMailPackage.getContent();
                     Bundle args = new Bundle();
