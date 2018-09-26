@@ -19,8 +19,8 @@ public class EventsRecyclerViewAdapter extends RecyclerView.Adapter<EventsRecycl
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mNameTextView = (TextView) itemView.findViewById(R.id.text_name_event_item);
-            mTimeTextView = (TextView) itemView.findViewById(R.id.text_time_event_item);
+            mNameTextView = itemView.findViewById(R.id.text_name_event_item);
+            mTimeTextView = itemView.findViewById(R.id.text_time_event_item);
         }
     }
 

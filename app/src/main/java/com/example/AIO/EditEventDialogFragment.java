@@ -193,7 +193,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         dialog.getWindow().getAttributes().windowAnimations = R.style.FullscreenDialogFragmentAnimation;
 
         // add listeners to back and save buttons
-        mBackButton = (ImageButton) root.findViewById(R.id.button_back_edit_event_dialog);
+        mBackButton = root.findViewById(R.id.button_back_edit_event_dialog);
         mBackButton.setOnClickListener(new View.OnClickListener() { // can it be ImageButton.OnClickListener()?
             @Override
             public void onClick(View v) {
@@ -226,7 +226,7 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
                         .show();
             }
         });
-        mSaveButton = (ImageButton) root.findViewById(R.id.button_save_edit_event_dialog);
+        mSaveButton = root.findViewById(R.id.button_save_edit_event_dialog);
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -255,10 +255,10 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         });
 
         // get references for and initialize various views in the edit template
-        mDateIcon = (ImageView) root.findViewById(R.id.image_date_edit_event_dialog);
-        mDateText = (TextView) root.findViewById(R.id.text_date_edit_event_dialog);
+        mDateIcon = root.findViewById(R.id.image_date_edit_event_dialog);
+        mDateText = root.findViewById(R.id.text_date_edit_event_dialog);
         mDateText.setText(String.format(Locale.US, "%d/%d/%d", mEvent.getMonth()+1, mEvent.getDay(), mEvent.getYear()));            // months+1 because months is zero-indexed
-        mDateLayout = (RelativeLayout) root.findViewById(R.id.layout_date_edit_event_dialog);
+        mDateLayout = root.findViewById(R.id.layout_date_edit_event_dialog);
         mDateLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,10 +267,10 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
             }
         });
 
-        mTimeIcon = (ImageView) root.findViewById(R.id.image_time_edit_event_dialog);
-        mTimeText = (TextView) root.findViewById(R.id.text_time_edit_event_dialog);
+        mTimeIcon = root.findViewById(R.id.image_time_edit_event_dialog);
+        mTimeText = root.findViewById(R.id.text_time_edit_event_dialog);
         mTimeText.setText(Event.convertHourAndMinuteToTimeStamp(mEvent.getHour(), mEvent.getMinute()));
-        mTimeLayout = (RelativeLayout) root.findViewById(R.id.layout_time_edit_event_dialog);
+        mTimeLayout = root.findViewById(R.id.layout_time_edit_event_dialog);
         mTimeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -280,10 +280,10 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         });
 
         mRemindersAdapter = new RemindersAdapter(this, mContext, R.layout.item_reminder, displayedRemindersList);
-        mDisplayedRemindersListView = (ListView) root.findViewById(R.id.listView_reminder_edit_event_dialog);
+        mDisplayedRemindersListView = root.findViewById(R.id.listView_reminder_edit_event_dialog);
         mDisplayedRemindersListView.setAdapter(mRemindersAdapter);
 
-        mAddRemindersBtn = (ImageButton) root.findViewById(R.id.button_add_reminder_edit_event_dialog);
+        mAddRemindersBtn = root.findViewById(R.id.button_add_reminder_edit_event_dialog);
         mAddRemindersBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -297,9 +297,9 @@ public class EditEventDialogFragment extends DialogFragment implements DatePicke
         });
         if (!canAddReminder()) { mAddRemindersBtn.setVisibility(View.INVISIBLE); }
 
-        mNameText = (EditText) root.findViewById(R.id.editText_name_edit_event_dialog);
+        mNameText = root.findViewById(R.id.editText_name_edit_event_dialog);
         mNameText.setText(mEvent.getName());
-        mNotesText = (EditText) root.findViewById(R.id.editText_notes_edit_event_dialog);
+        mNotesText = root.findViewById(R.id.editText_notes_edit_event_dialog);
         mNotesText.setText(mEvent.getNotes());
 
         // TODO: possibly need to reset hasEdits? it is an instance so probably not

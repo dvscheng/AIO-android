@@ -70,7 +70,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // 1.
-        mToolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        mToolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(mToolbar);
 
         // 2.
@@ -88,7 +88,7 @@ public class HomeActivity extends AppCompatActivity {
         tabStrip.setTabIndicatorColor(Color.WHITE);*/
 
         // 6.
-        mPager = (ViewPager) findViewById(R.id.viewpager_main);
+        mPager = findViewById(R.id.viewpager_main);
         mPagerAdapter = new ScreenSlidePagerAdapter(fragMan, this);
         mPager.setAdapter(mPagerAdapter);
         mPager.setOffscreenPageLimit(NUM_OF_FRAGMENTS_OFF_SCREEN);
@@ -108,9 +108,9 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case  R.id.debug_toolbar_task_list:
+            /*case  R.id.debug_toolbar_task_list:
                 // User chose the "Accounts" action.
-                // TODO: list out the tasks and events in a dialogfragment when pressed
+                // TODO: list out the tasks and events in a dialogfragment when pressed for debug purposes
                 mPagerAdapter.getTaskFrag().printDatabase();
                 return true;
             case R.id.debug_toolbar_event_list:
@@ -124,7 +124,7 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             case R.id.debug_show_notification_delayed:
                 showNotification(false);
-                return true;
+                return true;*/
 
 
             default:

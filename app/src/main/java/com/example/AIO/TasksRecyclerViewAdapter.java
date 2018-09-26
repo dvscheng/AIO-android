@@ -27,10 +27,10 @@ public class TasksRecyclerViewAdapter extends RecyclerView.Adapter<TasksRecycler
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mNameTextView = (TextView) itemView.findViewById(R.id.text_name_task_item);
-            mNotesTextView = (TextView) itemView.findViewById(R.id.text_notes_task_item);
-            mThisCheckbox = (CheckBox) itemView.findViewById(R.id.checkBox_task_item);
-            mDeleteButton = (Button) itemView.findViewById(R.id.delete_task_button);
+            mNameTextView = itemView.findViewById(R.id.text_name_task_item);
+            mNotesTextView = itemView.findViewById(R.id.text_notes_task_item);
+            mThisCheckbox = itemView.findViewById(R.id.checkBox_task_item);
+            mDeleteButton = itemView.findViewById(R.id.delete_task_button);
         }
     }
 

@@ -81,7 +81,7 @@ public class TasksFragment extends Fragment implements AddTaskDialogFragment.Add
                 R.layout.fragment_tasks, container, false);
 
         /* RecyclerView stuff */
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_tasks_fragment);
+        mRecyclerView = rootView.findViewById(R.id.recyclerView_tasks_fragment);
 
         // Initialize the mDbHelper and mTaskList
         mDbHelper = TaskDbHelper.getInstance(getContext());
@@ -127,7 +127,7 @@ public class TasksFragment extends Fragment implements AddTaskDialogFragment.Add
         mTargetFragment = this;
 
         // Creates a FAB
-        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab_tasks_fragment);
+        mFab = rootView.findViewById(R.id.fab_tasks_fragment);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

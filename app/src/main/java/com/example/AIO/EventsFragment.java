@@ -227,9 +227,9 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
                 R.layout.fragment_events, container, false);
 
         mContext = getContext();
-        mCalendarView = (CalendarView) rootView.findViewById(R.id.calendarView_events_fragment);
+        mCalendarView = rootView.findViewById(R.id.calendarView_events_fragment);
         mTargetFragment = this;
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_events_fragment);
+        mRecyclerView = rootView.findViewById(R.id.recyclerView_events_fragment);
         eventDbHelper = EventDbHelper.getInstance(mContext);
         reminderDbHelper = ReminderDbHelper.getInstance(mContext);
         mEventList = new ArrayList<>();
@@ -253,7 +253,7 @@ public class EventsFragment extends Fragment implements AddEventDialogFragment.A
         // Re-populate the RecyclerView
         refreshEventRecyclerView(currentMonth, currentDay, currentYear);
 
-        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab_events_fragment);
+        mFab = rootView.findViewById(R.id.fab_events_fragment);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

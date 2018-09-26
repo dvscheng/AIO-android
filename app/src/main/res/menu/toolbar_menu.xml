@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Settings, should always be in the overflow -->
-    <item
+    <!--<item
         android:id="@+id/debug_toolbar_task_list"
         android:title="@string/task_list_toolbar"
         app:showAsAction="never"/>
@@ -26,6 +26,6 @@
     <item
         android:id="@+id/debug_show_notification_delayed"
         android:title="@string/notification_delay_toolbar"
-        app:showAsAction="never"/>
+        app:showAsAction="never"/>-->
 
 </menu>

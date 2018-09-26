@@ -32,15 +32,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Get the email and pass..
-        mEmailText = (EditText) findViewById(R.id.email_text_field);
-        mPassText = (EditText) findViewById(R.id.password_text_field);
+        mEmailText = findViewById(R.id.email_text_field);
+        mPassText = findViewById(R.id.password_text_field);
 
         // 1.
-        mToolbar = (Toolbar) findViewById(R.id.login_toolbar);
+        mToolbar = findViewById(R.id.login_toolbar);
         setSupportActionBar(mToolbar);
 
         // 2.
-        mNameButton = (Button) findViewById(R.id.name_pass_button);
+        mNameButton = findViewById(R.id.name_pass_button);
         mNameButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {

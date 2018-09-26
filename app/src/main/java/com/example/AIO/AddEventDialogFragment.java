@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class AddEventDialogFragment extends DialogFragment {
 
@@ -52,21 +53,23 @@ public class AddEventDialogFragment extends DialogFragment {
                         // TODO: can probably take out the initializations of the variables, look into the dialog var passed in here and check if findViewById requires it
                         // Fetch the EditText fields, convert the text to strings
                         Dialog d = (Dialog) dialog;
-                        mEventName = (EditText) d.findViewById(R.id.editText_name_new_event_dialog);
+                        mEventName = d.findViewById(R.id.editText_name_new_event_dialog);
                         String eventName = mEventName.getText().toString();
-                        mEventNotes = (EditText) d.findViewById(R.id.editText_notes_new_event_dialog);
+                        mEventNotes = d.findViewById(R.id.editText_notes_new_event_dialog);
                         String eventNotes = mEventNotes.getText().toString();
-                        mDatePicker = (DatePicker) d.findViewById(R.id.datePicker_new_event_dialog);
+                        mDatePicker = d.findViewById(R.id.datePicker_new_event_dialog);
                         int month = mDatePicker.getMonth(); // months are [0-11]
                         int day = mDatePicker.getDayOfMonth();
                         int year = mDatePicker.getYear();
-                        mTimePicker = (TimePicker) d.findViewById(R.id.timePicker_new_event_dialog);
+                        mTimePicker = d.findViewById(R.id.timePicker_new_event_dialog);
                         int hour = mTimePicker.getCurrentHour(); // hours are [0-23] was deprecated in API level 23 to getHour()
                         int minute = mTimePicker.getCurrentMinute(); // minutes are [0-59] was deprecated in API level 23 to getMinute()
 
                         // Send to the callback the info.
                         if (!eventName.equals("")) {
                             mCallback.onPositiveClickAdd(eventName, eventNotes, month, day, year, hour, minute);
+                        } else {
+                            Toast.makeText(getContext(), "Make sure your event has a title!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 })

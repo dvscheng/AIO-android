@@ -87,7 +87,7 @@ public class AddReminderDialogFragment extends DialogFragment implements Adapter
                 });
 
         // set spinners for reminders
-        mDaySpinner = (Spinner) root.findViewById(R.id.spinner_days_new_reminder_dialog);
+        mDaySpinner = root.findViewById(R.id.spinner_days_new_reminder_dialog);
         daySpinnerAdapter = ArrayAdapter.createFromResource(mCallback.getContext(), R.array.reminder_numbers, android.R.layout.simple_spinner_item);
         daySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDaySpinner.setAdapter(daySpinnerAdapter);
@@ -95,7 +95,7 @@ public class AddReminderDialogFragment extends DialogFragment implements Adapter
         mDaySpinner.setSelection(DAY_SPINNER_DEFAULT_POS);
         daysBefore = DAY_SPINNER_DEFAULT_POS;
 
-        mHourSpinner = (Spinner) root.findViewById(R.id.spinner_hours_new_reminder_dialog);
+        mHourSpinner = root.findViewById(R.id.spinner_hours_new_reminder_dialog);
         hourSpinnerAdapter = ArrayAdapter.createFromResource(mCallback.getContext(), R.array.reminder_numbers, android.R.layout.simple_spinner_item);
         hourSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mHourSpinner.setAdapter(hourSpinnerAdapter);
@@ -103,7 +103,7 @@ public class AddReminderDialogFragment extends DialogFragment implements Adapter
         mHourSpinner.setSelection(HOUR_SPINNER_DEFAULT_POS);
         hoursBefore = HOUR_SPINNER_DEFAULT_POS;
 
-        mMinuteSpinner = (Spinner) root.findViewById(R.id.spinner_minutes_new_reminder_dialog);
+        mMinuteSpinner = root.findViewById(R.id.spinner_minutes_new_reminder_dialog);
         minuteSpinnerAdapter = ArrayAdapter.createFromResource(mCallback.getContext(), R.array.reminder_numbers, android.R.layout.simple_spinner_item);
         minuteSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mMinuteSpinner.setAdapter(minuteSpinnerAdapter);

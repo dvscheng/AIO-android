@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class AddTaskDialogFragment extends DialogFragment {
 
@@ -38,8 +39,8 @@ public class AddTaskDialogFragment extends DialogFragment {
         // Sets Callback to the Activity
         mCallback = (AddTasksDialogListener) getTargetFragment();
 
-        mTaskName = (EditText) root.findViewById(R.id.editText_name_new_task_dialog);
-        mTaskNotes = (EditText) root.findViewById(R.id.editText_notes_new_task_dialog);
+        mTaskName = root.findViewById(R.id.editText_name_new_task_dialog);
+        mTaskNotes = root.findViewById(R.id.editText_notes_new_task_dialog);
 
 
         builder.setView(root)
@@ -54,6 +55,8 @@ public class AddTaskDialogFragment extends DialogFragment {
                         // Send to Activity the info.
                         if (!taskName.equals("")) {
                             mCallback.onPositiveClick(task);
+                        } else {
+                            Toast.makeText(getContext(), "Make sure your task has a title!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 })

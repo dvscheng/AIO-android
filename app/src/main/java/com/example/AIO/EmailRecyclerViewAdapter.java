@@ -88,7 +88,12 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         if (viewHolder instanceof EmailViewHolder && i != loadingFooterIndex) {
             // TODO: "read" messages are in bold
             EmailViewHolder emailViewHolder = (EmailViewHolder) viewHolder;
-            emailViewHolder.mTitleTextView.setText(javaMailPackage.getFrom().getPersonal());
+            String sender = javaMailPackage.getFrom().getPersonal();
+            if (sender == null) {
+                sender = javaMailPackage.getFrom().getAddress();
+            }
+
+            emailViewHolder.mTitleTextView.setText(sender);
             emailViewHolder.mSubjectTextView.setText(javaMailPackage.getSubject());
             emailViewHolder.mDateTextView.setText(javaMailPackage.getReadableDate(false));
 
@@ -166,7 +171,7 @@ public class EmailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
     public void removeLoadingFooter() {
         int position = loadingFooterIndex;
-        if (position >= 0) {
+        if (position != -1) {
             isLoadingAdded = false;
             loadingFooterIndex = -1;
 
