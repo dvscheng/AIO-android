@@ -6,11 +6,12 @@ public class Task {
     private String mName;
     private String mNotes;
     private String mId;
-    private CheckBox vCheckBox;
+    private boolean isChecked;
 
     public Task(String name, String notes) {
         mName = name;
         mNotes = notes;
+        isChecked = false;
         mId = this.toString();    // assumingg Task.toString() returns a hash.
     }
 
@@ -24,7 +25,9 @@ public class Task {
 
     public String getId() { return mId; }
 
-    public void setCheckBoxView(CheckBox checkBox) { vCheckBox = checkBox; }        // check TasksRecyclerViewAdapter for checkbox ref assignment
+    public boolean isChecked() {
+        return isChecked;
+    }
 
-    public CheckBox getCheckBoxView() { return vCheckBox; }
+    public void setChecked(boolean checked) { isChecked = checked; }
 }

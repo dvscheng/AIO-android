@@ -22,14 +22,14 @@ public class TasksRecyclerViewAdapter extends RecyclerView.Adapter<TasksRecycler
         // For now, name only
         public TextView mNameTextView;
         public TextView mNotesTextView;
-        public CheckBox mThisCheckbox;
+        public CheckBox mCheckBox;
         public Button mDeleteButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mNameTextView = itemView.findViewById(R.id.text_name_task_item);
             mNotesTextView = itemView.findViewById(R.id.text_notes_task_item);
-            mThisCheckbox = itemView.findViewById(R.id.checkBox_task_item);
+            mCheckBox = itemView.findViewById(R.id.checkBox_task_item);
             mDeleteButton = itemView.findViewById(R.id.delete_task_button);
         }
     }
@@ -68,20 +68,20 @@ public class TasksRecyclerViewAdapter extends RecyclerView.Adapter<TasksRecycler
     public void onBindViewHolder(final TasksRecyclerViewAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
         final Task task = mTaskList.get(position);
-        task.setCheckBoxView(viewHolder.mThisCheckbox);             // set the checkbox ref in the obj
 
         // Set item views based on your views and data model
         TextView nameTextView = viewHolder.mNameTextView;
         nameTextView.setText(task.getName());
         TextView notesTextView = viewHolder.mNotesTextView;
         notesTextView.setText(task.getNotes());
+        viewHolder.mCheckBox.setChecked(task.isChecked());
 
         final TasksRecyclerViewAdapter thisAdapter = this;
 
-        viewHolder.mThisCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        viewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                task.setChecked(isChecked);
                 if (isChecked) {
                     // strike-through the text doesn't work with app-widgets, check remoteview for that
                     viewHolder.mNameTextView.setPaintFlags(viewHolder.mNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -96,31 +96,9 @@ public class TasksRecyclerViewAdapter extends RecyclerView.Adapter<TasksRecycler
         viewHolder.mDeleteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                /*
-                // deletes the task
-                TaskDbHelper dbHelper = new TaskDbHelper(mContext);
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                String name = viewHolder.mNameTextView.getText().toString();
-                String notes = viewHolder.mNotesTextView.getText().toString();
-                // SQL matches the col_name and col_notes to delete the correct task.
-
-                db.delete(TaskContract.TaskEntry.TABLE_NAME,
-                        TaskContract.TaskEntry.COL_TASK_NAME + "= '" + name
-                                + "' and "
-                                + TaskContract.TaskEntry.COL_TASK_NOTES + "= '" + notes + "'",
-                        null);
-
-                //* Notify the adapter of change and remove the task object from the list.  Thang creds*//*
-                // inefficient, but the number of tasks is low (presumably)
-                for (int i = 0; i < mTaskList.size(); i++) {
-                    if (mTaskList.get(i).getName().equals(name)
-                            && mTaskList.get(i).getNotes().equals(notes)) {
-                        mTaskList.remove(i);
-                    }
-                }
-                */
-                // uncheck the checkbox
-                task.getCheckBoxView().setChecked(false);
+                // remove task from recyclerview list and notify adapter
+                mTaskList.remove(task);
+                thisAdapter.notifyDataSetChanged();
 
                 // TODO: create the task by task id
                 // remove the task from the db
@@ -131,10 +109,6 @@ public class TasksRecyclerViewAdapter extends RecyclerView.Adapter<TasksRecycler
                                 + "' and "
                                 + TaskContract.TaskEntry.COL_TASK_NOTES + "= '" + task.getNotes() + "'",
                         null);
-
-                // remove task from recyclerview list and notify adapter
-                mTaskList.remove(task);
-                thisAdapter.notifyDataSetChanged();
             }
         });
     }
