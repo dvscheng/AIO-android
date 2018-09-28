@@ -44,7 +44,6 @@
         android:background="?android:attr/selectableItemBackground"
         android:layout_width="45dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:onClick="deleteTask" />
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

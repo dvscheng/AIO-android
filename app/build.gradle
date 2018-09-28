@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.example.AIO"
+        applicationId "com.AIO"
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
@@ -16,6 +16,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    // Added
+    lintOptions {
+        checkReleaseBuilds false
     }
 
     // Added
