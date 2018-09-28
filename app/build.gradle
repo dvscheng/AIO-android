@@ -1,9 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'AIO_key_0'
+            keyPassword 'ayiohkey@1'
+            storeFile file('C:/Users/LeDav.LAPTOP-DKSBKHF2/AndroidStudioProjects/keystores/AIO_android.jks')
+            storePassword 'ayiohkeystore2!'
+        }
+    }
     compileSdkVersion 28
     buildToolsVersion "24.0.2"
-
     defaultConfig {
         applicationId "com.AIO"
         minSdkVersion 21
@@ -15,14 +22,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
-
     // Added
     lintOptions {
         checkReleaseBuilds false
     }
-
     // Added
     packagingOptions {
         pickFirst 'META-INF/LICENSE.txt' // picks the JavaMail license file
@@ -50,9 +56,9 @@ def supportLibraryVersion = '24.2.1'
 dependencies {
     // implementation 'com.android.support:support-v4:' + supportLibraryVersion
     /*compile 'com.android.support:appcompat-v7:' + supportLibraryVersion
-        compile 'com.google.android.material:material:1.0.0-rc01'
-        compile 'com.android.support:recyclerview-v7:' + supportLibraryVersion
-        compile 'com.android.support:support-annotations:' + supportLibraryVersion*/
+                compile 'com.google.android.material:material:1.0.0-rc01'
+                compile 'com.android.support:recyclerview-v7:' + supportLibraryVersion
+                compile 'com.android.support:support-annotations:' + supportLibraryVersion*/
     implementation 'com.google.android.material:material:1.0.0-beta01'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
